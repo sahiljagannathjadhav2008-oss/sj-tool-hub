@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool Hub — Sahil Jadhav</title>
+<meta name="description" content="A personal, growing index of small, fast, browser-based tools. Built Different.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-glyph" aria-hidden="true">::</span>
+      <div class="brand-text">
+        <span class="brand-title">Tool&nbsp;Hub</span>
+        <span class="brand-sub mono">sahiljadhav / built-different</span>
+      </div>
+    </div>
+
+    <div class="command-search" role="search">
+      <span class="command-search-icon" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </span>
+      <input
+        type="text"
+        id="search-input"
+        class="command-search-input"
+        placeholder="Search tools…"
+        aria-label="Search tools"
+        autocomplete="off"
+      >
+      <kbd class="command-search-kbd mono">/</kbd>
+    </div>
+
+    <button id="settings-trigger" class="icon-button" aria-haspopup="dialog" aria-controls="settings-panel" aria-label="Open settings">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <p class="eyebrow mono">// personal tool index</p>
+    <h1 class="hero-title">A growing index of small, fast, browser tools.</h1>
+    <p class="hero-sub">Every tool here runs entirely in your browser — no installs, no accounts, no server round-trips. New entries appear the moment they're added to the index.</p>
+
+    <div class="hero-meta">
+      <span id="tool-count" class="mono-counter mono">000 tools</span>
+      <span class="meta-divider" aria-hidden="true">/</span>
+      <nav id="category-rail" class="category-rail" aria-label="Filter by category">
+        <button class="category-chip is-active mono" data-category="all" type="button">all</button>
+      </nav>
+    </div>
+  </section>
+
+  <section class="grid-section" aria-label="Tools">
+    <div id="tool-grid" class="tool-grid"></div>
+
+    <div id="empty-state" class="empty-state" hidden>
+      <pre class="terminal-block mono" aria-hidden="true">$ ls /tools
+No tools found.</pre>
+      <p class="empty-title">No tools available yet.</p>
+      <p class="empty-sub">This index is empty for now — the first entry added to <code class="mono">tools.json</code> will show up right here.</p>
+    </div>
+
+    <div id="no-results-state" class="empty-state" hidden>
+      <p class="empty-title">No matches.</p>
+      <p class="empty-sub">Nothing in this index matches your search or filter. Try a different term.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span class="mono footer-brand">Tool Hub</span>
+    <div class="footer-links">
+      <button id="about-trigger" class="footer-link" type="button" aria-haspopup="dialog" aria-controls="about-modal">About</button>
+      <span class="footer-link footer-version mono">v1.0.0</span>
+      <a class="footer-link" href="#" id="footer-github">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Settings panel -->
+<div id="settings-overlay" class="overlay" hidden></div>
+<aside id="settings-panel" class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+  <div class="panel-header">
+    <h2 id="settings-title">Settings</h2>
+    <button id="settings-close" class="icon-button" aria-label="Close settings">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+
+  <div class="panel-body">
+    <fieldset class="theme-fieldset">
+      <legend class="panel-label mono">Appearance</legend>
+
+      <label class="theme-option">
+        <input type="radio" name="theme" value="dark" id="theme-dark">
+        <span class="theme-swatch theme-swatch-dark" aria-hidden="true"></span>
+        <span class="theme-option-text">
+          <span class="theme-name">Dark</span>
+          <span class="theme-desc">Low-light, ink background</span>
+        </span>
+      </label>
+
+      <label class="theme-option">
+        <input type="radio" name="theme" value="light" id="theme-light">
+        <span class="theme-swatch theme-swatch-light" aria-hidden="true"></span>
+        <span class="theme-option-text">
+          <span class="theme-name">Light</span>
+          <span class="theme-desc">Bright, paper background</span>
+        </span>
+      </label>
+    </fieldset>
+  </div>
+</aside>
+
+<!-- About modal -->
+<div id="about-overlay" class="overlay" hidden></div>
+<div id="about-modal" class="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title" hidden>
+  <button id="about-close" class="icon-button about-close" aria-label="Close about dialog">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </button>
+  <p class="about-eyebrow mono">// about developer</p>
+  <h2 id="about-title" class="about-name">Sahil Jadhav</h2>
+  <p class="about-tagline">Built Different</p>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
