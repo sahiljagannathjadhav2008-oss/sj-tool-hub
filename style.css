@@ -562,11 +562,18 @@ a {
   -webkit-backdrop-filter: var(--scrim-blur);
   z-index: 50;
   opacity: 0;
-  animation: overlay-in var(--dur-med) var(--ease) forwards;
+  transition: opacity var(--dur-med) var(--ease);
 }
 
-@keyframes overlay-in {
-  to { opacity: 1; }
+/* [hidden] must win over the flex/opacity rules below (equal specificity,
+   so it needs the attribute qualifier to take precedence) or the panel/
+   modal would render — invisible but interactive — before JS ever runs. */
+.overlay[hidden] {
+  display: none;
+}
+
+.overlay.is-open {
+  opacity: 1;
 }
 
 /* ============================================================
@@ -587,20 +594,16 @@ a {
   flex-direction: column;
   gap: 24px;
   transform: translateX(100%);
-  animation: panel-in var(--dur-med) var(--ease) forwards;
+  transition: transform var(--dur-med) var(--ease);
   box-shadow: var(--shadow-lg);
 }
 
-@keyframes panel-in {
-  to { transform: translateX(0); }
+.settings-panel[hidden] {
+  display: none;
 }
 
-.settings-panel.is-closing {
-  animation: panel-out var(--dur-med) var(--ease) forwards;
-}
-
-@keyframes panel-out {
-  to { transform: translateX(100%); }
+.settings-panel.is-open {
+  transform: translateX(0);
 }
 
 .panel-header {
@@ -709,25 +712,16 @@ a {
   box-shadow: var(--shadow-lg);
   transform: translate(-50%, -50%) scale(0.94);
   opacity: 0;
-  animation: modal-in var(--dur-med) var(--ease) forwards;
+  transition: transform var(--dur-med) var(--ease), opacity var(--dur-med) var(--ease);
 }
 
-@keyframes modal-in {
-  to {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
+.about-modal[hidden] {
+  display: none;
 }
 
-.about-modal.is-closing {
-  animation: modal-out var(--dur-fast) var(--ease) forwards;
-}
-
-@keyframes modal-out {
-  to {
-    transform: translate(-50%, -50%) scale(0.94);
-    opacity: 0;
-  }
+.about-modal.is-open {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
 }
 
 .about-close {
@@ -755,7 +749,9 @@ a {
 }
 
 /* ============================================================
-   Motion
+   Motion (page-load entrance for normal, non-hidden content only —
+   the settings panel and about modal are intentionally excluded and
+   use transitions above instead)
    ============================================================ */
 
 @keyframes rise {
