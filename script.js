@@ -124,10 +124,6 @@
       e.preventDefault();
       els.searchInput.focus();
     }
-    if (e.key === 'Escape') {
-      closeSettings();
-      closeAbout();
-    }
   });
 
   /* ----------------------------------------------------------
@@ -221,56 +217,93 @@
   }
 
   /* ----------------------------------------------------------
-     Settings panel
+     Overlay panels (Settings panel + About modal)
+
+     Both start with the `hidden` attribute in the HTML, so they render
+     nothing — and are unreachable by tab order — until opened. Opening
+     removes `hidden` first (so the browser has a box to transition),
+     then adds `.is-open` on the next animation frame so the transform/
+     opacity transition actually has a "from" state to animate out of.
+     Closing reverses that: drop `.is-open` to run the transition, then
+     restore `hidden` once the transition finishes (with a timeout
+     fallback in case `transitionend` never fires, e.g. reduced motion).
      ---------------------------------------------------------- */
 
-  function openSettings() {
-    els.settingsOverlay.hidden = false;
-    els.settingsPanel.hidden = false;
-    els.settingsPanel.classList.remove('is-closing');
-    els.settingsClose.focus();
+  function createOverlayPanel({ panel, overlay, trigger, closeBtn, openFocusEl }) {
+    let isOpen = false;
+    let closeTimer = null;
+
+    function handleTransitionEnd(e) {
+      if (e.target !== panel) return;
+      finishClose();
+    }
+
+    function finishClose() {
+      panel.hidden = true;
+      overlay.hidden = true;
+      panel.removeEventListener('transitionend', handleTransitionEnd);
+      clearTimeout(closeTimer);
+    }
+
+    function open() {
+      if (isOpen) return;
+      isOpen = true;
+
+      overlay.hidden = false;
+      panel.hidden = false;
+
+      // Force the browser to register the "closed" box before flipping
+      // to "open" on the next frame, so the transition actually runs.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          overlay.classList.add('is-open');
+          panel.classList.add('is-open');
+        });
+      });
+
+      (openFocusEl || closeBtn).focus();
+      document.addEventListener('keydown', handleKeydown);
+    }
+
+    function close() {
+      if (!isOpen) return;
+      isOpen = false;
+
+      overlay.classList.remove('is-open');
+      panel.classList.remove('is-open');
+
+      panel.addEventListener('transitionend', handleTransitionEnd);
+      // Fallback in case transitionend doesn't fire (e.g. prefers-reduced-motion).
+      closeTimer = setTimeout(finishClose, 400);
+
+      document.removeEventListener('keydown', handleKeydown);
+      trigger.focus();
+    }
+
+    function handleKeydown(e) {
+      if (e.key === 'Escape') close();
+    }
+
+    trigger.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', close);
+
+    return { open, close, isOpen: () => isOpen };
   }
 
-  function closeSettings() {
-    if (els.settingsPanel.hidden) return;
-    els.settingsPanel.classList.add('is-closing');
-    els.settingsOverlay.hidden = true;
-    setTimeout(() => {
-      els.settingsPanel.hidden = true;
-      els.settingsPanel.classList.remove('is-closing');
-    }, 300);
-    els.settingsTrigger.focus();
-  }
+  createOverlayPanel({
+    panel: els.settingsPanel,
+    overlay: els.settingsOverlay,
+    trigger: els.settingsTrigger,
+    closeBtn: els.settingsClose,
+  });
 
-  els.settingsTrigger.addEventListener('click', openSettings);
-  els.settingsClose.addEventListener('click', closeSettings);
-  els.settingsOverlay.addEventListener('click', closeSettings);
-
-  /* ----------------------------------------------------------
-     About modal
-     ---------------------------------------------------------- */
-
-  function openAbout() {
-    els.aboutOverlay.hidden = false;
-    els.aboutModal.hidden = false;
-    els.aboutModal.classList.remove('is-closing');
-    els.aboutClose.focus();
-  }
-
-  function closeAbout() {
-    if (els.aboutModal.hidden) return;
-    els.aboutModal.classList.add('is-closing');
-    els.aboutOverlay.hidden = true;
-    setTimeout(() => {
-      els.aboutModal.hidden = true;
-      els.aboutModal.classList.remove('is-closing');
-    }, 180);
-    els.aboutTrigger.focus();
-  }
-
-  els.aboutTrigger.addEventListener('click', openAbout);
-  els.aboutClose.addEventListener('click', closeAbout);
-  els.aboutOverlay.addEventListener('click', closeAbout);
+  createOverlayPanel({
+    panel: els.aboutModal,
+    overlay: els.aboutOverlay,
+    trigger: els.aboutTrigger,
+    closeBtn: els.aboutClose,
+  });
 
   /* ----------------------------------------------------------
      Footer GitHub placeholder
