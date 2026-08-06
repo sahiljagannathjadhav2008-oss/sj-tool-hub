@@ -1,6 +1,6 @@
 # Tool Hub
 
-A personal, permanent, ever-growing index of small browser-based tools — built to run entirely on GitHub Pages with plain HTML, CSS, and JavaScript. No frameworks, no build step, no backend.
+A personal, permanent, ever-growing index of small browser-based tools — built to run   entirely on GitHub Pages with plain HTML, CSS, and JavaScript. No frameworks, no build step, no backend.
 
 **About Developer**
 Sahil Jadhav
