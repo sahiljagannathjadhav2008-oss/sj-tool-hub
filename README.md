@@ -140,7 +140,7 @@ Swap the `<link>` tag and the `--font-*` variables together if you want a differ
 
 ## Future expansion guide
 
-The architecture leaves room to add the following without redesigning anything:
+The architecture leaves room to add the following without redesigning  anything:
 
 - **Favorites / Pinned tools** — add a `pinned: true` field to a tool's entry in `tools.json`, then sort pinned tools first in `getFilteredTools()` inside `script.js`.
 - **Sorting / Recently added** — add a `dateAdded` field to entries and sort by it before rendering.
