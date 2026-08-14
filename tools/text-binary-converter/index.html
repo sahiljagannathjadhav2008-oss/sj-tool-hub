@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09090b">
+
+<title>Text & Binary Converter - SJ Tool Hub</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+    --bg:#09090b;
+    --card:#111114;
+    --card2:#16161a;
+    --border:#292930;
+    --text:#f5f5f7;
+    --muted:#92929c;
+    --accent:#8b5cf6;
+    --accent-dark:#211737;
+    --danger:#ef4444;
+    --success:#22c55e;
+}
+
+html,body{
+    margin:0;
+    min-height:100%;
+    background:var(--bg);
+    color:var(--text);
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+body{
+    overflow-x:hidden;
+}
+
+button,
+textarea{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.app{
+    width:min(1100px,94%);
+    margin:auto;
+    padding:22px 0 45px;
+}
+
+/* HEADER */
+
+.header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:22px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    width:48px;
+    height:48px;
+    display:grid;
+    place-items:center;
+    border:1px solid #383840;
+    border-radius:15px;
+    background:#151519;
+    font-size:22px;
+}
+
+.title{
+    margin:0;
+    font-size:21px;
+    letter-spacing:-.4px;
+}
+
+.subtitle{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:4px;
+}
+
+.badge{
+    padding:8px 12px;
+    border:1px solid #303038;
+    border-radius:999px;
+    color:#aaaab2;
+    font-size:11px;
+}
+
+/* GRID */
+
+.tools-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+
+/* CARD */
+
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:17px 18px;
+    border-bottom:1px solid var(--border);
+}
+
+.card-title{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-size:15px;
+    font-weight:750;
+}
+
+.card-icon{
+    width:32px;
+    height:32px;
+    display:grid;
+    place-items:center;
+    border:1px solid #393941;
+    border-radius:10px;
+    background:#17171b;
+}
+
+.card-body{
+    padding:17px;
+}
+
+/* TEXTAREA */
+
+textarea{
+    width:100%;
+    min-height:300px;
+    resize:vertical;
+    padding:14px;
+    border:1px solid #303038;
+    border-radius:13px;
+    outline:none;
+    background:#0d0d10;
+    color:#f1f1f3;
+    font-size:13px;
+    line-height:1.65;
+    transition:.2s;
+}
+
+textarea:focus{
+    border-color:#624398;
+    box-shadow:0 0 0 3px rgba(139,92,246,.08);
+}
+
+textarea.binary{
+    font-family:
+        "JetBrains Mono",
+        "Cascadia Code",
+        Consolas,
+        monospace;
+
+    letter-spacing:.2px;
+}
+
+textarea::placeholder{
+    color:#5e5e67;
+}
+
+/* INFO */
+
+.info{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:8px;
+    color:#66666f;
+    font-size:10px;
+}
+
+/* BUTTONS */
+
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:13px;
+}
+
+.btn{
+    min-height:42px;
+    padding:9px 14px;
+    border:1px solid #36363e;
+    border-radius:11px;
+    background:#151519;
+    color:#f3f3f5;
+    transition:.18s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+    border-color:#62626c;
+}
+
+.btn:active{
+    transform:scale(.95);
+}
+
+.btn.primary{
+    border-color:#7049b5;
+    background:var(--accent-dark);
+}
+
+.btn.success{
+    border-color:#28613d;
+    color:#baf2cb;
+}
+
+.btn.danger{
+    border-color:#613238;
+    color:#ffaaaa;
+}
+
+/* PRIVACY */
+
+.privacy{
+    margin-top:18px;
+    padding:14px 16px;
+    border:1px solid #25252c;
+    border-radius:14px;
+    background:#0d0d10;
+    color:#72727b;
+    font-size:11px;
+    line-height:1.6;
+}
+
+.privacy b{
+    color:#aaaab2;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:22px;
+    z-index:1000;
+    max-width:90%;
+    padding:11px 15px;
+    border:1px solid #393940;
+    border-radius:12px;
+    background:#18181d;
+    color:white;
+    font-size:12px;
+    text-align:center;
+    opacity:0;
+    pointer-events:none;
+    transform:translate(-50%,20px);
+    transition:.25s;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+.toast.error{
+    border-color:#713336;
+    color:#ffb5b5;
+}
+
+/* FOOTER */
+
+footer{
+    margin-top:20px;
+    text-align:center;
+    color:#55555d;
+    font-size:10px;
+}
+
+/* MOBILE */
+
+@media(max-width:750px){
+
+    .app{
+        width:94%;
+        padding-top:15px;
+    }
+
+    .tools-grid{
+        grid-template-columns:1fr;
+    }
+
+    .badge{
+        display:none;
+    }
+
+    textarea{
+        min-height:240px;
+    }
+
+}
+
+@media(max-width:430px){
+
+    .title{
+        font-size:18px;
+    }
+
+    .subtitle{
+        font-size:10px;
+    }
+
+    .actions .btn{
+        flex:1;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="logo">
+            01
+        </div>
+
+        <div>
+
+            <h1 class="title">
+                Text & Binary Converter
+            </h1>
+
+            <div class="subtitle">
+                Convert text to binary and binary back to text
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="badge">
+        100% Offline
+    </div>
+
+</header>
+
+
+<main class="tools-grid">
+
+
+<!-- =====================================================
+     BINARY → TEXT
+===================================================== -->
+
+<section class="card">
+
+    <div class="card-head">
+
+        <div class="card-title">
+
+            <div class="card-icon">
+                01
+            </div>
+
+            Binary → Text
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <textarea
+            id="binaryInput"
+            class="binary"
+            spellcheck="false"
+            placeholder="Enter binary here...
+
+Example:
+
+01001000 01100101 01101100 01101100 01101111"
+        ></textarea>
+
+
+        <div class="info">
+
+            <span id="binaryCount">
+                0 bits
+            </span>
+
+            <span>
+                UTF-8
+            </span>
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                id="binaryConvert"
+                class="btn primary"
+            >
+                Convert to Text
+            </button>
+
+            <button
+                id="binaryCopy"
+                class="btn success"
+            >
+                Copy
+            </button>
+
+            <button
+                id="binaryClear"
+                class="btn danger"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     TEXT → BINARY
+===================================================== -->
+
+<section class="card">
+
+    <div class="card-head">
+
+        <div class="card-title">
+
+            <div class="card-icon">
+                Aa
+            </div>
+
+            Text → Binary
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <textarea
+            id="textInput"
+            placeholder="Enter text here...
+
+Example:
+
+Hello World!"
+        ></textarea>
+
+
+        <div class="info">
+
+            <span id="textCount">
+                0 characters
+            </span>
+
+            <span>
+                UTF-8
+            </span>
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                id="textConvert"
+                class="btn primary"
+            >
+                Convert to Binary
+            </button>
+
+            <button
+                id="textCopy"
+                class="btn success"
+            >
+                Copy
+            </button>
+
+            <button
+                id="textClear"
+                class="btn danger"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+
+<div class="privacy">
+
+    <b>🔒 Privacy:</b>
+    Everything is processed locally in your browser.
+    No text or binary data is uploaded to a server.
+
+</div>
+
+
+<footer>
+    Text & Binary Converter · SJ Tool Hub · Developed by Sahil Jadhav
+</footer>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const binaryInput =
+    document.getElementById("binaryInput");
+
+const textInput =
+    document.getElementById("textInput");
+
+const binaryConvert =
+    document.getElementById("binaryConvert");
+
+const textConvert =
+    document.getElementById("textConvert");
+
+const binaryCopy =
+    document.getElementById("binaryCopy");
+
+const textCopy =
+    document.getElementById("textCopy");
+
+const binaryClear =
+    document.getElementById("binaryClear");
+
+const textClear =
+    document.getElementById("textClear");
+
+const binaryCount =
+    document.getElementById("binaryCount");
+
+const textCount =
+    document.getElementById("textCount");
+
+const toastBox =
+    document.getElementById("toast");
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+function showToast(message,error=false){
+
+    toastBox.textContent = message;
+
+    toastBox.className =
+        "toast show" +
+        (error ? " error" : "");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(() => {
+
+            toastBox.className =
+                "toast";
+
+        },3000);
+
+}
+
+
+/* =========================================================
+   TEXT → BINARY
+========================================================= */
+
+function textToBinary(text){
+
+    const encoder =
+        new TextEncoder();
+
+    const bytes =
+        encoder.encode(text);
+
+
+    return Array.from(bytes)
+        .map(byte =>
+            byte
+                .toString(2)
+                .padStart(8,"0")
+        )
+        .join(" ");
+
+}
+
+
+textConvert.addEventListener(
+    "click",
+    () => {
+
+        const text =
+            textInput.value;
+
+
+        if(!text){
+
+            showToast(
+                "Enter some text first.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        try{
+
+            binaryInput.value =
+                textToBinary(text);
+
+
+            updateCounts();
+
+
+            showToast(
+                "Text converted to binary."
+            );
+
+        }catch(error){
+
+            console.error(error);
+
+            showToast(
+                "Could not convert the text.",
+                true
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   BINARY → TEXT
+========================================================= */
+
+function binaryToText(binary){
+
+    /*
+     * Remove whitespace.
+     * This allows:
+     *
+     * 01001000 01101001
+     *
+     * and:
+     *
+     * 0100100001101001
+     *
+     * both to work.
+     */
+
+    const clean =
+        binary.replace(/\s+/g,"");
+
+
+    if(!clean){
+
+        throw new Error(
+            "Binary input is empty."
+        );
+
+    }
+
+
+    if(!/^[01]+$/.test(clean)){
+
+        throw new Error(
+            "Binary can contain only 0 and 1."
+        );
+
+    }
+
+
+    if(clean.length % 8 !== 0){
+
+        throw new Error(
+            "Binary length must be a multiple of 8 bits."
+        );
+
+    }
+
+
+    const bytes = [];
+
+
+    for(
+        let i=0;
+        i<clean.length;
+        i+=8
+    ){
+
+        bytes.push(
+            parseInt(
+                clean.slice(i,i+8),
+                2
+            )
+        );
+
+    }
+
+
+    const decoder =
+        new TextDecoder(
+            "utf-8",
+            {
+                fatal:true
+            }
+        );
+
+
+    return decoder.decode(
+        new Uint8Array(bytes)
+    );
+
+}
+
+
+binaryConvert.addEventListener(
+    "click",
+    () => {
+
+        try{
+
+            const result =
+                binaryToText(
+                    binaryInput.value
+                );
+
+
+            textInput.value =
+                result;
+
+
+            updateCounts();
+
+
+            showToast(
+                "Binary converted to text."
+            );
+
+        }catch(error){
+
+            console.error(error);
+
+            showToast(
+                error.message ||
+                "Invalid binary data.",
+                true
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   COPY
+========================================================= */
+
+async function copyText(value){
+
+    if(!value){
+
+        showToast(
+            "Nothing to copy.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        await navigator.clipboard.writeText(
+            value
+        );
+
+        showToast(
+            "Copied to clipboard."
+        );
+
+    }catch(error){
+
+        /*
+         * Fallback for older browsers.
+         */
+
+        const temp =
+            document.createElement("textarea");
+
+        temp.value = value;
+
+        temp.style.position =
+            "fixed";
+
+        temp.style.opacity =
+            "0";
+
+        document.body.appendChild(temp);
+
+        temp.select();
+
+        try{
+
+            document.execCommand("copy");
+
+            showToast(
+                "Copied to clipboard."
+            );
+
+        }catch{
+
+            showToast(
+                "Could not copy.",
+                true
+            );
+
+        }
+
+        temp.remove();
+
+    }
+
+}
+
+
+binaryCopy.addEventListener(
+    "click",
+    () =>
+        copyText(
+            textInput.value
+        )
+);
+
+
+textCopy.addEventListener(
+    "click",
+    () =>
+        copyText(
+            binaryInput.value
+        )
+);
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+binaryClear.addEventListener(
+    "click",
+    () => {
+
+        binaryInput.value = "";
+
+        updateCounts();
+
+    }
+);
+
+
+textClear.addEventListener(
+    "click",
+    () => {
+
+        textInput.value = "";
+
+        updateCounts();
+
+    }
+);
+
+
+/* =========================================================
+   COUNTERS
+========================================================= */
+
+function updateCounts(){
+
+    const binary =
+        binaryInput.value
+            .replace(/\s/g,"");
+
+
+    binaryCount.textContent =
+        `${binary.length} bits`;
+
+
+    const characters =
+        Array.from(
+            textInput.value
+        ).length;
+
+
+    textCount.textContent =
+        `${characters} ${
+            characters === 1
+            ? "character"
+            : "characters"
+        }`;
+
+}
+
+
+binaryInput.addEventListener(
+    "input",
+    updateCounts
+);
+
+
+textInput.addEventListener(
+    "input",
+    updateCounts
+);
+
+
+/* =========================================================
+   KEYBOARD SHORTCUTS
+========================================================= */
+
+binaryInput.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            (event.ctrlKey ||
+             event.metaKey) &&
+            event.key === "Enter"
+        ){
+
+            event.preventDefault();
+
+            binaryConvert.click();
+
+        }
+
+    }
+);
+
+
+textInput.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            (event.ctrlKey ||
+             event.metaKey) &&
+            event.key === "Enter"
+        ){
+
+            event.preventDefault();
+
+            textConvert.click();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL
+========================================================= */
+
+updateCounts();
+
+</script>
+
+</body>
+</html>
