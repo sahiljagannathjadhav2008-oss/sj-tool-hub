@@ -6,4 +6,21 @@
     "folder": "tools/mp3-merger",
     "version": "1.0.0"
   }
-]
+{
+  "id": "text-binary-converter",
+  "name": "Text & Binary Converter",
+  "description": "Convert text to binary and binary back to text instantly in your browser.",
+  "category": "Converters",
+  "icon": "01",
+  "path": "tools/text-binary-converter/index.html",
+  "tags": [
+    "text",
+    "binary",
+    "converter",
+    "text to binary",
+    "binary to text",
+    "encoding",
+    "decoder"
+  ],
+  "featured": false
+}]
