@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09090b">
 
-<title>MP3 Merger</title>
+<title>MP3 Merger - SJ Tool Hub</title>
 
 <style>
 *{
@@ -17,35 +15,38 @@
 
 :root{
     --bg:#09090b;
-    --panel:#111114;
-    --panel2:#17171b;
-    --border:#2b2b31;
-    --text:#f5f5f5;
-    --muted:#92929b;
+    --card:#111114;
+    --card2:#17171b;
+    --border:#292930;
+    --text:#f5f5f7;
+    --muted:#92929c;
     --accent:#8b5cf6;
     --accent2:#a78bfa;
-    --danger:#ef4444;
-    --success:#22c55e;
+    --green:#22c55e;
+    --red:#ef4444;
 }
 
 html,body{
     margin:0;
-    padding:0;
-    width:100%;
     min-height:100%;
     background:var(--bg);
     color:var(--text);
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family:Inter,system-ui,-apple-system,
+                 BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
 body{
     overflow-x:hidden;
+}
+
+button,
+input,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
 }
 
 .app{
@@ -58,8 +59,8 @@ body{
 
 .header{
     display:flex;
-    justify-content:space-between;
     align-items:center;
+    justify-content:space-between;
     gap:15px;
     margin-bottom:20px;
 }
@@ -73,24 +74,17 @@ body{
 .logo{
     width:48px;
     height:48px;
-    border:1px solid #393943;
+    border:1px solid #383840;
     border-radius:15px;
     display:grid;
     place-items:center;
-    background:linear-gradient(
-        145deg,
-        #18181d,
-        #101014
-    );
-    box-shadow:
-        0 10px 30px rgba(0,0,0,.3);
+    background:#151519;
     font-size:23px;
 }
 
 .title{
     margin:0;
     font-size:21px;
-    font-weight:750;
     letter-spacing:-.4px;
 }
 
@@ -101,87 +95,76 @@ body{
 }
 
 .badge{
-    border:1px solid #303039;
-    border-radius:999px;
     padding:8px 12px;
+    border:1px solid #303038;
+    border-radius:999px;
     color:#aaaab2;
     font-size:11px;
-    white-space:nowrap;
 }
 
 /* CARD */
 
 .card{
-    background:var(--panel);
+    background:var(--card);
     border:1px solid var(--border);
     border-radius:20px;
     overflow:hidden;
-    box-shadow:0 10px 40px rgba(0,0,0,.18);
-}
-
-/* DROP AREA */
-
-.drop-card{
-    padding:18px;
     margin-bottom:18px;
 }
 
-.drop-zone{
-    min-height:180px;
-    border:1.5px dashed #44444e;
-    border-radius:17px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:25px;
-    transition:.2s ease;
-    background:#0d0d10;
+/* DROP */
+
+.drop{
+    padding:18px;
 }
 
-.drop-zone.dragging{
+.dropzone{
+    min-height:185px;
+    border:1.5px dashed #41414a;
+    border-radius:17px;
+    background:#0d0d10;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    padding:25px;
+    transition:.2s;
+}
+
+.dropzone.drag{
     border-color:var(--accent);
     background:#151020;
-    transform:scale(.995);
 }
 
 .drop-icon{
-    font-size:45px;
-    margin-bottom:10px;
+    font-size:44px;
+    margin-bottom:8px;
 }
 
 .drop-title{
     font-size:17px;
-    font-weight:700;
+    font-weight:750;
 }
 
 .drop-text{
-    margin-top:6px;
     color:var(--muted);
     font-size:12px;
+    margin-top:6px;
 }
 
-.file-button{
+.file-picker{
     display:inline-flex;
-    margin-top:16px;
     align-items:center;
     justify-content:center;
-    gap:8px;
+    margin-top:16px;
     padding:11px 17px;
     border:1px solid #6949a9;
     border-radius:12px;
     background:#211737;
-    color:#fff;
-    cursor:pointer;
+    color:white;
     transition:.18s;
 }
 
-.file-button:hover{
-    transform:translateY(-2px);
-    border-color:var(--accent2);
-}
-
-.file-button:active{
+.file-picker:active{
     transform:scale(.95);
 }
 
@@ -189,28 +172,28 @@ body{
     display:none;
 }
 
-/* TOOLBAR */
-
 .toolbar{
     display:flex;
-    flex-wrap:wrap;
     gap:9px;
-    margin-top:15px;
+    flex-wrap:wrap;
+    margin-top:14px;
 }
+
+/* BUTTON */
 
 .btn{
     min-height:42px;
     padding:9px 14px;
-    border:1px solid #35353e;
+    border:1px solid #35353d;
     border-radius:11px;
     background:#151519;
     color:#f4f4f5;
-    transition:.18s ease;
+    transition:.18s;
 }
 
 .btn:hover{
     transform:translateY(-2px);
-    border-color:#60606b;
+    border-color:#62626c;
 }
 
 .btn:active{
@@ -222,14 +205,9 @@ body{
     background:#211737;
 }
 
-.btn.success{
-    border-color:#27643d;
-    background:#102217;
-}
-
 .btn.danger{
-    border-color:#663033;
-    color:#ffaaaa;
+    border-color:#673035;
+    color:#ffabab;
 }
 
 .btn:disabled{
@@ -238,37 +216,32 @@ body{
     transform:none;
 }
 
-/* FILE LIST */
-
-.list-card{
-    margin-bottom:18px;
-}
+/* LIST */
 
 .section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
     padding:16px 18px;
     border-bottom:1px solid var(--border);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
 }
 
 .section-title{
-    font-weight:700;
     font-size:14px;
+    font-weight:750;
 }
 
-.file-count{
+.count{
     color:var(--muted);
     font-size:11px;
 }
 
-.file-list{
+.list{
     padding:10px;
 }
 
 .empty{
-    min-height:190px;
+    min-height:180px;
     display:grid;
     place-items:center;
     text-align:center;
@@ -276,44 +249,40 @@ body{
     font-size:12px;
 }
 
-.file-item{
+.item{
     display:grid;
-    grid-template-columns:auto 1fr auto;
+    grid-template-columns:35px 1fr auto;
     align-items:center;
-    gap:12px;
-    padding:12px;
-    border:1px solid #27272e;
-    background:#0d0d10;
-    border-radius:14px;
+    gap:10px;
+    padding:11px;
     margin-bottom:8px;
-    transition:.18s;
+    border:1px solid #28282f;
+    border-radius:14px;
+    background:#0d0d10;
 }
 
-.file-item:last-child{
+.item:last-child{
     margin-bottom:0;
 }
 
-.file-item.dragging{
+.item.dragging{
     opacity:.45;
     border-color:var(--accent);
 }
 
-.drag-handle{
-    width:30px;
-    height:35px;
-    display:grid;
-    place-items:center;
+.handle{
     color:#777780;
-    font-size:18px;
+    font-size:20px;
+    text-align:center;
     cursor:grab;
     user-select:none;
 }
 
-.file-info{
+.info{
     min-width:0;
 }
 
-.file-name{
+.name{
     font-size:13px;
     font-weight:650;
     white-space:nowrap;
@@ -321,175 +290,129 @@ body{
     text-overflow:ellipsis;
 }
 
-.file-meta{
-    margin-top:4px;
+.meta{
+    color:#74747d;
     font-size:10px;
-    color:#777780;
+    margin-top:4px;
 }
 
-.file-actions{
+.actions{
     display:flex;
-    gap:6px;
+    gap:5px;
 }
 
-.icon-btn{
-    width:35px;
-    height:35px;
+.icon{
+    width:34px;
+    height:34px;
     border:1px solid #303038;
     border-radius:9px;
     background:#16161a;
     color:#ddd;
-    transition:.15s;
 }
 
-.icon-btn:hover{
-    border-color:#64646e;
-}
-
-.icon-btn:active{
+.icon:active{
     transform:scale(.9);
 }
 
-.icon-btn.delete{
+.icon.remove{
     color:#ff9696;
-}
-
-/* OPTIONS */
-
-.options{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-    padding:18px;
-    border-top:1px solid var(--border);
-}
-
-.option{
-    border:1px solid #292930;
-    border-radius:13px;
-    padding:13px;
-    background:#0d0d10;
-}
-
-.option label{
-    display:block;
-    color:#aaaab2;
-    font-size:11px;
-    margin-bottom:7px;
-}
-
-.option select{
-    width:100%;
-    background:#151519;
-    color:#fff;
-    border:1px solid #33333b;
-    border-radius:9px;
-    padding:9px;
-    outline:none;
-}
-
-.option select:focus{
-    border-color:var(--accent);
 }
 
 /* OUTPUT */
 
 .output{
     padding:18px;
-    margin-bottom:18px;
 }
 
-.output-preview{
+.filename{
     margin-top:10px;
-    padding:11px 12px;
+    padding:12px;
     border:1px solid #292930;
+    border-radius:11px;
     background:#0d0d10;
-    border-radius:10px;
-    color:#777780;
-    font-size:10px;
-    line-height:1.5;
-    word-break:break-word;
+    color:#9999a2;
+    font-size:11px;
+    line-height:1.55;
+    overflow-wrap:anywhere;
 }
 
-.output-preview strong{
-    color:#aaaab2;
+.filename b{
+    color:#c0c0c8;
 }
 
-.progress-wrap{
+.merge{
+    width:100%;
+    margin-top:12px;
+}
+
+/* PROGRESS */
+
+.progress{
     display:none;
     margin-top:16px;
 }
 
-.progress-wrap.show{
+.progress.show{
     display:block;
 }
 
-.progress-top{
+.progress-line{
     display:flex;
     justify-content:space-between;
-    color:#999;
     font-size:11px;
+    color:#999;
     margin-bottom:7px;
 }
 
-.progress{
-    width:100%;
+.track{
     height:8px;
     background:#222229;
     border-radius:99px;
     overflow:hidden;
 }
 
-.progress-bar{
-    width:0%;
+.bar{
+    width:0;
     height:100%;
     background:var(--accent);
-    border-radius:inherit;
     transition:width .2s;
 }
 
 .status{
-    margin-top:9px;
-    color:#888891;
+    margin-top:8px;
     font-size:11px;
-}
-
-.download-area{
-    display:none;
-    margin-top:15px;
-}
-
-.download-area.show{
-    display:block;
+    color:#777780;
 }
 
 .download{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
+    display:none;
     width:100%;
+    margin-top:15px;
     padding:13px;
+    text-align:center;
+    text-decoration:none;
     border:1px solid #28633d;
     border-radius:12px;
     background:#102518;
     color:#b8f5cc;
-    text-decoration:none;
     font-size:13px;
-    font-weight:650;
+    font-weight:700;
 }
 
-/* PRIVACY */
+.download.show{
+    display:block;
+}
 
 .privacy{
-    padding:15px 18px;
-    color:#777780;
+    margin-top:16px;
+    padding-top:15px;
+    border-top:1px solid var(--border);
+    color:#72727b;
     font-size:11px;
     line-height:1.6;
-    border-top:1px solid var(--border);
 }
 
-.privacy strong{
+.privacy b{
     color:#aaaab2;
 }
 
@@ -498,19 +421,19 @@ body{
 .toast{
     position:fixed;
     left:50%;
-    bottom:24px;
-    transform:translate(-50%,20px);
-    opacity:0;
-    pointer-events:none;
-    z-index:999;
+    bottom:22px;
+    z-index:9999;
     max-width:90%;
     padding:11px 15px;
-    border:1px solid #38383f;
+    border:1px solid #393940;
     border-radius:12px;
     background:#18181d;
     color:#fff;
     font-size:12px;
     text-align:center;
+    opacity:0;
+    pointer-events:none;
+    transform:translate(-50%,20px);
     transition:.25s;
 }
 
@@ -520,17 +443,14 @@ body{
 }
 
 .toast.error{
-    border-color:#6e3030;
-    color:#ffb4b4;
+    border-color:#713336;
+    color:#ffb5b5;
 }
-
-/* FOOTER */
 
 footer{
     text-align:center;
     color:#55555d;
     font-size:10px;
-    margin-top:20px;
 }
 
 /* MOBILE */
@@ -546,20 +466,12 @@ footer{
         display:none;
     }
 
-    .options{
-        grid-template-columns:1fr;
+    .item{
+        grid-template-columns:30px 1fr;
     }
 
-    .file-item{
-        grid-template-columns:auto 1fr;
-    }
-
-    .file-actions{
+    .actions{
         grid-column:2;
-    }
-
-    .drag-handle{
-        grid-row:1 / span 2;
     }
 
 }
@@ -574,10 +486,6 @@ footer{
         font-size:10px;
     }
 
-    .drop-zone{
-        min-height:160px;
-    }
-
     .toolbar .btn{
         flex:1;
     }
@@ -590,339 +498,191 @@ footer{
 
 <div class="app">
 
-    <!-- HEADER -->
+<header class="header">
 
-    <header class="header">
+    <div class="brand">
 
-        <div class="brand">
+        <div class="logo">🎵</div>
 
-            <div class="logo">
-                🎵
+        <div>
+            <h1 class="title">MP3 Merger</h1>
+            <div class="subtitle">
+                Join multiple MP3 files into one
+            </div>
+        </div>
+
+    </div>
+
+    <div class="badge">
+        Browser Based
+    </div>
+
+</header>
+
+
+<!-- FILE PICKER -->
+
+<section class="card drop">
+
+    <div id="dropzone" class="dropzone">
+
+        <div>
+
+            <div class="drop-icon">🎧</div>
+
+            <div class="drop-title">
+                Add MP3 files
             </div>
 
-            <div>
-
-                <h1 class="title">
-                    MP3 Merger
-                </h1>
-
-                <div class="subtitle">
-                    Merge multiple MP3 files into one
-                </div>
-
+            <div class="drop-text">
+                Select multiple songs or drag & drop
             </div>
+
+            <label class="file-picker">
+
+                ＋ Select MP3 Files
+
+                <input
+                    id="fileInput"
+                    type="file"
+                    accept=".mp3,audio/mpeg"
+                    multiple
+                >
+
+            </label>
 
         </div>
 
-        <div class="badge">
-            100% Browser Processing
-        </div>
+    </div>
 
-    </header>
+    <div class="toolbar">
 
-
-    <!-- ADD FILES -->
-
-    <section class="card drop-card">
-
-        <div
-            id="dropZone"
-            class="drop-zone"
-        >
-
-            <div>
-
-                <div class="drop-icon">
-                    🎧
-                </div>
-
-                <div class="drop-title">
-                    Add your MP3 files
-                </div>
-
-                <div class="drop-text">
-                    Select multiple files or drag & drop them here
-                </div>
-
-                <label class="file-button">
-
-                    ＋ Select MP3 Files
-
-                    <input
-                        id="fileInput"
-                        type="file"
-                        accept=".mp3,audio/mpeg"
-                        multiple
-                    >
-
-                </label>
-
-            </div>
-
-        </div>
-
-        <div class="toolbar">
-
-            <button
-                id="addMore"
-                class="btn"
-            >
-                ＋ Add More
-            </button>
-
-            <button
-                id="clearAll"
-                class="btn danger"
-            >
-                🗑 Clear All
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- FILE LIST -->
-
-    <section class="card list-card">
-
-        <div class="section-head">
-
-            <div class="section-title">
-                Songs
-            </div>
-
-            <div
-                id="fileCount"
-                class="file-count"
-            >
-                0 files
-            </div>
-
-        </div>
-
-        <div
-            id="fileList"
-            class="file-list"
-        >
-
-            <div class="empty">
-
-                <div>
-
-                    <div style="font-size:35px;margin-bottom:8px;">
-                        🎶
-                    </div>
-
-                    Add two or more MP3 files to start
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- OPTIONS -->
-
-        <div class="options">
-
-            <div class="option">
-
-                <label>
-                    MP3 Quality
-                </label>
-
-                <select id="bitrate">
-
-                    <option value="128">
-                        128 kbps
-                    </option>
-
-                    <option value="192" selected>
-                        192 kbps
-                    </option>
-
-                    <option value="256">
-                        256 kbps
-                    </option>
-
-                    <option value="320">
-                        320 kbps
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="option">
-
-                <label>
-                    Audio Channels
-                </label>
-
-                <select id="channels">
-
-                    <option value="2" selected>
-                        Stereo
-                    </option>
-
-                    <option value="1">
-                        Mono
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="option">
-
-                <label>
-                    Sample Rate
-                </label>
-
-                <select id="sampleRate">
-
-                    <option value="44100" selected>
-                        44.1 kHz
-                    </option>
-
-                    <option value="48000">
-                        48 kHz
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- OUTPUT -->
-
-    <section class="card output">
-
-        <div class="section-title">
-            Output File
-        </div>
-
-        <!--
-            The actual filename is generated automatically
-            from the selected song names.
-        -->
-
-        <div
-            id="outputPreview"
-            class="output-preview"
-        >
-            Add songs to see the output filename.
-        </div>
-
-
-        <button
-            id="mergeButton"
-            class="btn primary"
-            style="
-                width:100%;
-                margin-top:12px;
-            "
-        >
-            🔗 Merge MP3 Files
+        <button id="addMore" class="btn">
+            ＋ Add More
         </button>
 
+        <button id="clear" class="btn danger">
+            🗑 Clear
+        </button>
 
-        <!-- PROGRESS -->
+    </div>
 
-        <div
-            id="progressWrap"
-            class="progress-wrap"
-        >
+</section>
 
-            <div class="progress-top">
 
-                <span id="progressText">
-                    Preparing...
-                </span>
+<!-- SONG LIST -->
 
-                <span id="progressPercent">
-                    0%
-                </span>
+<section class="card">
 
-            </div>
+    <div class="section-head">
 
-            <div class="progress">
+        <div class="section-title">
+            Songs
+        </div>
 
-                <div
-                    id="progressBar"
-                    class="progress-bar"
-                ></div>
+        <div id="count" class="count">
+            0 files
+        </div>
 
-            </div>
+    </div>
 
-            <div
-                id="status"
-                class="status"
-            >
-                Preparing FFmpeg...
-            </div>
+    <div id="list" class="list">
+
+        <div class="empty">
+            🎶<br><br>
+            Add two or more MP3 files
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- OUTPUT -->
+
+<section class="card output">
+
+    <div class="section-title">
+        Output File
+    </div>
+
+    <div id="filename" class="filename">
+        Add songs to generate the filename.
+    </div>
+
+    <button
+        id="merge"
+        class="btn primary merge"
+        disabled
+    >
+        🔗 Merge MP3 Files
+    </button>
+
+
+    <div id="progress" class="progress">
+
+        <div class="progress-line">
+
+            <span id="progressText">
+                Preparing...
+            </span>
+
+            <span id="percent">
+                0%
+            </span>
 
         </div>
 
-
-        <!-- DOWNLOAD -->
-
-        <div
-            id="downloadArea"
-            class="download-area"
-        >
-
-            <a
-                id="downloadLink"
-                class="download"
-                href="#"
-                download
-            >
-                ⬇ Download Merged MP3
-            </a>
-
+        <div class="track">
+            <div id="bar" class="bar"></div>
         </div>
 
-
-        <div class="privacy">
-
-            <strong>🔒 Privacy:</strong>
-
-            Your music files are processed inside your browser.
-            They are not uploaded to an SJ Tool Hub server.
-            No backend is required for the actual merging process.
-
+        <div id="status" class="status">
+            Starting audio engine...
         </div>
 
-    </section>
+    </div>
 
 
-    <footer>
-        MP3 Merger · Developed by Sahil Jadhav
-    </footer>
+    <a
+        id="download"
+        class="download"
+        href="#"
+        download
+    >
+        ⬇ Download Merged MP3
+    </a>
+
+
+    <div class="privacy">
+
+        <b>🔒 Privacy:</b>
+        Files are processed locally in your browser.
+        They are not intentionally uploaded to an SJ Tool Hub server.
+
+    </div>
+
+</section>
+
+
+<footer>
+    MP3 Merger · SJ Tool Hub · Developed by Sahil Jadhav
+</footer>
 
 </div>
 
 
-<div
-    id="toast"
-    class="toast"
-></div>
+<div id="toast" class="toast"></div>
 
-
-<!-- =========================================================
-     FFMPEG WASM
-========================================================= -->
 
 <script type="module">
+
+/*
+============================================================
+ SJ TOOL HUB — MP3 MERGER
+ Cross-device browser implementation
+============================================================
+*/
 
 import {
     FFmpeg
@@ -934,214 +694,137 @@ import {
 } from "https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/+esm";
 
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
-
-const $ =
-    id => document.getElementById(id);
-
-const fileInput =
-    $("fileInput");
-
-const dropZone =
-    $("dropZone");
-
-const fileList =
-    $("fileList");
-
-const fileCount =
-    $("fileCount");
-
-const mergeButton =
-    $("mergeButton");
-
-const progressWrap =
-    $("progressWrap");
-
-const progressBar =
-    $("progressBar");
-
-const progressText =
-    $("progressText");
-
-const progressPercent =
-    $("progressPercent");
-
-const status =
-    $("status");
-
-const downloadArea =
-    $("downloadArea");
-
-const downloadLink =
-    $("downloadLink");
-
-const outputPreview =
-    $("outputPreview");
+const $ = id =>
+    document.getElementById(id);
 
 
-/* =========================================================
-   STATE
-========================================================= */
+const fileInput = $("fileInput");
+const dropzone = $("dropzone");
+const list = $("list");
+const count = $("count");
+const merge = $("merge");
+const clear = $("clear");
+const addMore = $("addMore");
 
-let files = [];
+const filenameBox = $("filename");
 
+const progress = $("progress");
+const bar = $("bar");
+const progressText = $("progressText");
+const percent = $("percent");
+const status = $("status");
+
+const download = $("download");
+const toastBox = $("toast");
+
+
+let songs = [];
 let ffmpeg = null;
-
-let ffmpegLoaded = false;
-
+let loaded = false;
 let outputURL = null;
-
-let dragIndex = null;
-
-let converting = false;
+let draggingIndex = null;
+let busy = false;
 
 
 /* =========================================================
    TOAST
 ========================================================= */
 
-let toastTimer = null;
+let toastTimer;
 
-function toast(
-    message,
-    error = false
-){
+function toast(message,error=false){
 
-    const el =
-        $("toast");
+    toastBox.textContent = message;
 
-    el.textContent =
-        message;
-
-    el.className =
+    toastBox.className =
         "toast show" +
-        (
-            error
-            ? " error"
-            : ""
-        );
+        (error ? " error" : "");
 
-    clearTimeout(
-        toastTimer
-    );
+    clearTimeout(toastTimer);
 
-    toastTimer =
-        setTimeout(
-            () => {
+    toastTimer = setTimeout(() => {
 
-                el.className =
-                    "toast";
+        toastBox.className = "toast";
 
-            },
-            3200
-        );
+    },3200);
 
 }
 
 
 /* =========================================================
-   FILE INPUT
+   FILE ADDING
 ========================================================= */
 
 fileInput.addEventListener(
     "change",
-    event => {
+    e => {
 
         addFiles(
-            [...event.target.files]
+            Array.from(e.target.files)
         );
 
-        fileInput.value = "";
+        e.target.value = "";
 
     }
 );
 
 
-/* =========================================================
-   ADD MORE
-========================================================= */
-
-$("addMore").onclick =
-    () => fileInput.click();
+addMore.onclick = () =>
+    fileInput.click();
 
 
-/* =========================================================
-   DRAG & DROP FILES
-========================================================= */
-
-dropZone.addEventListener(
+dropzone.addEventListener(
     "dragover",
-    event => {
+    e => {
 
-        event.preventDefault();
+        e.preventDefault();
 
-        dropZone.classList.add(
-            "dragging"
-        );
+        dropzone.classList.add("drag");
 
     }
 );
 
-dropZone.addEventListener(
+
+dropzone.addEventListener(
     "dragleave",
     () => {
 
-        dropZone.classList.remove(
-            "dragging"
-        );
+        dropzone.classList.remove("drag");
 
     }
 );
 
-dropZone.addEventListener(
+
+dropzone.addEventListener(
     "drop",
-    event => {
+    e => {
 
-        event.preventDefault();
+        e.preventDefault();
 
-        dropZone.classList.remove(
-            "dragging"
-        );
+        dropzone.classList.remove("drag");
 
         addFiles(
-            [...event.dataTransfer.files]
+            Array.from(e.dataTransfer.files)
         );
 
     }
 );
 
 
-/* =========================================================
-   ADD FILES
-========================================================= */
+function addFiles(newFiles){
 
-function addFiles(
-    newFiles
-){
+    const valid =
+        newFiles.filter(file => {
 
-    const mp3Files =
-        newFiles.filter(
-            file => {
+            return (
+                file.type === "audio/mpeg" ||
+                file.name.toLowerCase().endsWith(".mp3")
+            );
 
-                const name =
-                    file.name.toLowerCase();
-
-                return (
-                    file.type ===
-                        "audio/mpeg"
-                    ||
-                    name.endsWith(
-                        ".mp3"
-                    )
-                );
-
-            }
-        );
+        });
 
 
-    if(!mp3Files.length){
+    if(!valid.length){
 
         toast(
             "Please select MP3 files only.",
@@ -1153,133 +836,59 @@ function addFiles(
     }
 
 
-    for(
-        const file
-        of mp3Files
-    ){
+    for(const file of valid){
 
         const duplicate =
-            files.some(
-                existing =>
-
-                    existing.name ===
-                        file.name &&
-
-                    existing.size ===
-                        file.size &&
-
-                    existing.lastModified ===
-                        file.lastModified
+            songs.some(old =>
+                old.name === file.name &&
+                old.size === file.size &&
+                old.lastModified === file.lastModified
             );
 
 
         if(!duplicate){
 
-            files.push(
-                file
-            );
+            songs.push(file);
 
         }
 
     }
 
 
-    renderFiles();
+    render();
 
 }
 
 
 /* =========================================================
-   GET CLEAN SONG NAME
+   FILENAME
 ========================================================= */
 
-function getSongName(
-    filename
-){
+function cleanName(name){
 
-    /*
-     * Remove extension only.
-     *
-     * Example:
-     *
-     * "Believer.mp3"
-     *      ↓
-     * "Believer"
-     */
-
-    return filename
-        .replace(
-            /\.mp3$/i,
-            ""
-        )
+    return name
+        .replace(/\.mp3$/i,"")
         .trim();
 
 }
 
 
-/* =========================================================
-   GENERATE OUTPUT FILENAME
-========================================================= */
+function outputName(){
 
-function generateOutputFilename(){
-
-    if(!files.length){
-
+    if(!songs.length)
         return "";
-
-    }
-
-
-    /*
-     * Take the current order of songs.
-     *
-     * Example:
-     *
-     * Song A
-     * Song B
-     * Song C
-     *
-     * becomes:
-     *
-     * Song A, Song B, Song C.mp3
-     */
-
-    const names =
-        files.map(
-            file =>
-                getSongName(
-                    file.name
-                )
-        );
-
-
-    /*
-     * Remove empty names.
-     */
-
-    const cleanNames =
-        names.filter(
-            name =>
-                name.length > 0
-        );
-
-
-    if(!cleanNames.length){
-
-        return "Merged-Music.mp3";
-
-    }
 
 
     let result =
-        cleanNames.join(
-            ", "
-        );
+        songs
+            .map(file => cleanName(file.name))
+            .filter(Boolean)
+            .join(", ");
 
 
     /*
-     * Windows and Android filename
-     * safety characters.
+     * Remove characters that are problematic
+     * on Windows/Android file systems.
      */
 
     result =
@@ -1290,522 +899,349 @@ function generateOutputFilename(){
 
 
     /*
-     * Avoid extremely long filenames.
-     *
-     * 240 characters gives enough room
-     * while staying safe on most systems.
+     * Keep filename within a practical limit.
      */
 
-    const maxLength =
-        240;
-
-
-    if(
-        result.length >
-        maxLength
-    ){
+    if(result.length > 230){
 
         result =
-            result.substring(
-                0,
-                maxLength
-            ).trim();
-
-        result +=
+            result.substring(0,230).trim() +
             "…";
 
     }
 
 
-    return result +
-        ".mp3";
+    return result + ".mp3";
 
 }
 
 
-/* =========================================================
-   UPDATE OUTPUT PREVIEW
-========================================================= */
+function updateFilename(){
 
-function updateOutputPreview(){
+    if(!songs.length){
 
-    if(!files.length){
-
-        outputPreview.innerHTML =
-            "Add songs to see the output filename.";
+        filenameBox.textContent =
+            "Add songs to generate the filename.";
 
         return;
 
     }
 
 
-    const filename =
-        generateOutputFilename();
-
-
-    outputPreview.innerHTML =
-
-        "<strong>Output:</strong> " +
-        escapeHTML(
-            filename
-        );
+    filenameBox.innerHTML =
+        "<b>Output:</b> " +
+        escapeHTML(outputName());
 
 }
 
 
 /* =========================================================
-   RENDER FILE LIST
+   RENDER
 ========================================================= */
 
-function renderFiles(){
+function render(){
 
-    fileCount.textContent =
-        `${files.length} ${
-            files.length === 1
+    count.textContent =
+        `${songs.length} ${
+            songs.length === 1
             ? "file"
             : "files"
         }`;
 
 
-    if(!files.length){
+    merge.disabled =
+        songs.length < 2 || busy;
 
-        fileList.innerHTML = `
 
+    updateFilename();
+
+
+    if(!songs.length){
+
+        list.innerHTML = `
             <div class="empty">
+                🎶<br><br>
+                Add two or more MP3 files
+            </div>
+        `;
 
-                <div>
+        return;
 
-                    <div style="
-                        font-size:35px;
-                        margin-bottom:8px;
-                    ">
-                        🎶
+    }
+
+
+    list.innerHTML =
+        songs.map((file,index) => `
+
+            <div
+                class="item"
+                draggable="true"
+                data-index="${index}"
+            >
+
+                <div class="handle">
+                    ☷
+                </div>
+
+                <div class="info">
+
+                    <div class="name">
+                        ${escapeHTML(file.name)}
                     </div>
 
-                    Add two or more MP3 files to start
+                    <div class="meta">
+                        MP3 · ${formatBytes(file.size)}
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <button
+                        class="icon"
+                        data-action="up"
+                    >
+                        ↑
+                    </button>
+
+                    <button
+                        class="icon"
+                        data-action="down"
+                    >
+                        ↓
+                    </button>
+
+                    <button
+                        class="icon remove"
+                        data-action="remove"
+                    >
+                        ×
+                    </button>
 
                 </div>
 
             </div>
 
-        `;
-
-        mergeButton.disabled =
-            true;
-
-        updateOutputPreview();
-
-        return;
-
-    }
+        `).join("");
 
 
-    mergeButton.disabled =
-        files.length < 2;
+    list.querySelectorAll(".item")
+        .forEach(item => {
+
+            const index =
+                Number(item.dataset.index);
 
 
-    fileList.innerHTML =
-        files.map(
-            (
-                file,
-                index
-            ) => {
+            item.addEventListener(
+                "dragstart",
+                () => {
 
-                const size =
-                    formatBytes(
-                        file.size
+                    draggingIndex = index;
+
+                    item.classList.add("dragging");
+
+                }
+            );
+
+
+            item.addEventListener(
+                "dragend",
+                () => {
+
+                    draggingIndex = null;
+
+                    item.classList.remove("dragging");
+
+                }
+            );
+
+
+            item.addEventListener(
+                "dragover",
+                e => e.preventDefault()
+            );
+
+
+            item.addEventListener(
+                "drop",
+                e => {
+
+                    e.preventDefault();
+
+                    if(
+                        draggingIndex === null ||
+                        draggingIndex === index
+                    )
+                        return;
+
+
+                    const moved =
+                        songs.splice(
+                            draggingIndex,
+                            1
+                        )[0];
+
+
+                    songs.splice(
+                        index,
+                        0,
+                        moved
                     );
 
 
-                return `
+                    render();
 
-                <div
-                    class="file-item"
-                    draggable="true"
-                    data-index="${index}"
-                >
-
-                    <div
-                        class="drag-handle"
-                        title="Drag to reorder"
-                    >
-                        ☷
-                    </div>
+                }
+            );
 
 
-                    <div class="file-info">
+            item.querySelectorAll("[data-action]")
+                .forEach(button => {
 
-                        <div class="file-name">
+                    button.onclick = e => {
 
-                            ${escapeHTML(
-                                file.name
-                            )}
+                        e.stopPropagation();
 
-                        </div>
-
-                        <div class="file-meta">
-
-                            MP3 · ${size}
-
-                        </div>
-
-                    </div>
+                        const action =
+                            button.dataset.action;
 
 
-                    <div class="file-actions">
+                        if(action === "remove"){
 
-                        <button
-                            class="icon-btn"
-                            data-action="up"
-                            title="Move up"
-                        >
-                            ↑
-                        </button>
+                            songs.splice(index,1);
 
-                        <button
-                            class="icon-btn"
-                            data-action="down"
-                            title="Move down"
-                        >
-                            ↓
-                        </button>
-
-                        <button
-                            class="icon-btn delete"
-                            data-action="delete"
-                            title="Remove"
-                        >
-                            ×
-                        </button>
-
-                    </div>
-
-                </div>
-
-                `;
-
-            }
-        ).join("");
+                        }
 
 
-    /*
-     * Drag/reorder
-     */
+                        if(action === "up" && index > 0){
 
-    fileList
-        .querySelectorAll(
-            ".file-item"
-        )
-        .forEach(
-            item => {
+                            [
+                                songs[index-1],
+                                songs[index]
+                            ] =
+                            [
+                                songs[index],
+                                songs[index-1]
+                            ];
 
-                const index =
-                    Number(
-                        item.dataset.index
-                    );
-
-
-                item.addEventListener(
-                    "dragstart",
-                    () => {
-
-                        dragIndex =
-                            index;
-
-                        item.classList.add(
-                            "dragging"
-                        );
-
-                    }
-                );
-
-
-                item.addEventListener(
-                    "dragend",
-                    () => {
-
-                        dragIndex =
-                            null;
-
-                        item.classList.remove(
-                            "dragging"
-                        );
-
-                    }
-                );
-
-
-                item.addEventListener(
-                    "dragover",
-                    event => {
-
-                        event.preventDefault();
-
-                    }
-                );
-
-
-                item.addEventListener(
-                    "drop",
-                    event => {
-
-                        event.preventDefault();
-
-
-                        const targetIndex =
-                            index;
+                        }
 
 
                         if(
-                            dragIndex === null ||
-                            dragIndex === targetIndex
+                            action === "down" &&
+                            index < songs.length-1
                         ){
 
-                            return;
+                            [
+                                songs[index],
+                                songs[index+1]
+                            ] =
+                            [
+                                songs[index+1],
+                                songs[index]
+                            ];
 
                         }
 
 
-                        const moved =
-                            files.splice(
-                                dragIndex,
-                                1
-                            )[0];
+                        invalidateDownload();
 
+                        render();
 
-                        files.splice(
-                            targetIndex,
-                            0,
-                            moved
-                        );
+                    };
 
+                });
 
-                        renderFiles();
-
-                    }
-                );
-
-
-                item
-                    .querySelectorAll(
-                        "[data-action]"
-                    )
-                    .forEach(
-                        button => {
-
-                            button.addEventListener(
-                                "click",
-                                event => {
-
-                                    event.stopPropagation();
-
-
-                                    const action =
-                                        button.dataset.action;
-
-
-                                    if(
-                                        action ===
-                                        "delete"
-                                    ){
-
-                                        files.splice(
-                                            index,
-                                            1
-                                        );
-
-                                    }
-
-
-                                    else if(
-                                        action ===
-                                        "up"
-                                    ){
-
-                                        if(
-                                            index > 0
-                                        ){
-
-                                            [
-                                                files[index - 1],
-                                                files[index]
-                                            ] =
-                                            [
-                                                files[index],
-                                                files[index - 1]
-                                            ];
-
-                                        }
-
-                                    }
-
-
-                                    else if(
-                                        action ===
-                                        "down"
-                                    ){
-
-                                        if(
-                                            index <
-                                            files.length - 1
-                                        ){
-
-                                            [
-                                                files[index],
-                                                files[index + 1]
-                                            ] =
-                                            [
-                                                files[index + 1],
-                                                files[index]
-                                            ];
-
-                                        }
-
-                                    }
-
-
-                                    renderFiles();
-
-                                }
-                            );
-
-                        }
-                    );
-
-            }
-        );
-
-
-    /*
-     * Update generated output name
-     * after every change.
-     */
-
-    updateOutputPreview();
+        });
 
 }
 
 
 /* =========================================================
-   CLEAR ALL
+   CLEAR
 ========================================================= */
 
-$("clearAll").onclick =
-    () => {
+clear.onclick = () => {
 
-        if(!files.length)
-            return;
-
-
-        files = [];
+    if(busy)
+        return;
 
 
-        renderFiles();
+    songs = [];
 
+    invalidateDownload();
 
-        resetDownload();
+    render();
 
-
-        toast(
-            "All files removed."
-        );
-
-    };
+};
 
 
 /* =========================================================
-   FFMPEG
+   FFMPEG LOAD
 ========================================================= */
 
 async function loadFFmpeg(){
 
-    if(ffmpegLoaded)
+    if(loaded)
         return;
 
 
-    if(!ffmpeg){
-
-        ffmpeg =
-            new FFmpeg();
+    ffmpeg = new FFmpeg();
 
 
-        ffmpeg.on(
-            "progress",
-            ({
-                progress
-            }) => {
+    ffmpeg.on(
+        "log",
+        ({message}) => {
 
-                const percent =
-                    Math.max(
-                        0,
-                        Math.min(
-                            100,
-                            Math.round(
-                                progress * 100
-                            )
-                        )
-                    );
-
-
-                progressBar.style.width =
-                    percent + "%";
-
-
-                progressPercent.textContent =
-                    percent + "%";
-
-            }
-        );
-
-
-        ffmpeg.on(
-            "log",
-            ({
+            console.log(
+                "[SJ MP3 Merger]",
                 message
-            }) => {
+            );
 
-                console.log(
-                    "[FFmpeg]",
-                    message
-                );
-
-            }
-        );
-
-    }
+        }
+    );
 
 
-    progressText.textContent =
-        "Loading audio engine...";
+    /*
+     * We deliberately use the single-thread
+     * core for maximum compatibility.
+     *
+     * Multithread FFmpeg requires
+     * SharedArrayBuffer / cross-origin
+     * isolation headers, which GitHub Pages
+     * tools cannot safely assume.
+     */
+
+    const base =
+        "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
 
 
     status.textContent =
-        "First-time setup may take a moment.";
+        "Loading audio engine...";
 
 
-    const baseURL =
-        "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd";
+    progressText.textContent =
+        "Loading audio engine";
 
 
     await ffmpeg.load({
 
         coreURL:
             await toBlobURL(
-                `${baseURL}/ffmpeg-core.js`,
+                `${base}/ffmpeg-core.js`,
                 "text/javascript"
             ),
 
         wasmURL:
             await toBlobURL(
-                `${baseURL}/ffmpeg-core.wasm`,
+                `${base}/ffmpeg-core.wasm`,
                 "application/wasm"
             )
 
     });
 
 
-    ffmpegLoaded =
-        true;
+    loaded = true;
 
 }
 
@@ -1814,17 +1250,13 @@ async function loadFFmpeg(){
    MERGE
 ========================================================= */
 
-mergeButton.onclick =
-    mergeMP3;
+merge.onclick = async () => {
 
-
-async function mergeMP3(){
-
-    if(converting)
+    if(busy)
         return;
 
 
-    if(files.length < 2){
+    if(songs.length < 2){
 
         toast(
             "Add at least two MP3 files.",
@@ -1836,177 +1268,118 @@ async function mergeMP3(){
     }
 
 
-    converting =
-        true;
+    busy = true;
 
+    merge.disabled = true;
 
-    mergeButton.disabled =
-        true;
+    invalidateDownload();
 
+    progress.classList.add("show");
 
-    resetDownload();
-
-
-    progressWrap.classList.add(
-        "show"
+    setProgress(
+        0,
+        "Preparing files..."
     );
-
-
-    progressBar.style.width =
-        "0%";
-
-
-    progressPercent.textContent =
-        "0%";
 
 
     try{
 
-        /*
-         * Load FFmpeg.
-         */
-
         await loadFFmpeg();
 
 
-        progressText.textContent =
-            "Preparing files...";
-
-
-        status.textContent =
-            "Reading selected MP3 files";
-
-
         /*
-         * Clean temporary FFmpeg files.
+         * Remove old temporary files.
          */
 
-        try{
-
-            const oldFiles =
-                await ffmpeg.listDir("/");
-
-
-            for(
-                const item
-                of oldFiles
-            ){
-
-                if(
-                    item.name.startsWith(
-                        "sj_input_"
-                    )
-                    ||
-                    item.name ===
-                        "sj_list.txt"
-                    ||
-                    item.name ===
-                        "SJ-Merged-Music.mp3"
-                ){
-
-                    try{
-
-                        await ffmpeg.deleteFile(
-                            item.name
-                        );
-
-                    }catch{}
-
-                }
-
-            }
-
-        }catch{}
+        await cleanupFFmpeg();
 
 
         /*
-         * Write files into FFmpeg.
+         * Upload each file to the
+         * FFmpeg virtual filesystem.
          */
 
         for(
-            let i = 0;
-            i < files.length;
+            let i=0;
+            i<songs.length;
             i++
         ){
 
-            progressText.textContent =
-                `Preparing file ${
-                    i + 1
-                } of ${
-                    files.length
-                }`;
+            const name =
+                `sj_${String(i).padStart(4,"0")}.mp3`;
 
 
             status.textContent =
-                files[i].name;
+                `Reading: ${songs[i].name}`;
 
 
-            const inputName =
-                `sj_input_${String(i)
-                    .padStart(4,"0")}.mp3`;
+            setProgress(
+                Math.round(
+                    (i / songs.length) * 20
+                ),
+                `Preparing song ${i+1} of ${songs.length}`
+            );
 
 
             await ffmpeg.writeFile(
-                inputName,
-                await fetchFile(
-                    files[i]
-                )
+                name,
+                await fetchFile(songs[i])
             );
 
         }
 
 
         /*
-         * Create concat list.
+         * Build concat file.
          */
 
-        let concatList =
-            "";
+        let listText = "";
 
 
         for(
-            let i = 0;
-            i < files.length;
+            let i=0;
+            i<songs.length;
             i++
         ){
 
-            concatList +=
-                `file 'sj_input_${String(i)
-                    .padStart(4,"0")}.mp3'\n`;
+            listText +=
+                `file 'sj_${String(i).padStart(4,"0")}.mp3'\n`;
 
         }
 
 
         await ffmpeg.writeFile(
-            "sj_list.txt",
-            new TextEncoder().encode(
-                concatList
-            )
+            "sj_concat.txt",
+            new TextEncoder().encode(listText)
         );
 
 
-        progressText.textContent =
-            "Merging audio...";
+        /*
+         * IMPORTANT:
+         *
+         * First try stream-copy.
+         *
+         * This avoids re-encoding and therefore
+         * keeps original MP3 quality.
+         */
+
+        setProgress(
+            25,
+            "Joining MP3 streams..."
+        );
 
 
         status.textContent =
-            "Encoding final MP3";
+            "Trying lossless MP3 merge...";
 
 
-        const bitrate =
-            $("bitrate").value;
-
-
-        const channels =
-            $("channels").value;
-
-
-        const sampleRate =
-            $("sampleRate").value;
-
-
-        const result =
+        let result =
             await ffmpeg.exec([
+
+                "-hide_banner",
+
+                "-loglevel",
+                "error",
 
                 "-f",
                 "concat",
@@ -2015,68 +1388,99 @@ async function mergeMP3(){
                 "0",
 
                 "-i",
-                "sj_list.txt",
+                "sj_concat.txt",
 
-                "-vn",
+                "-map",
+                "0:a:0",
 
-                "-ar",
-                sampleRate,
-
-                "-ac",
-                channels,
-
-                "-b:a",
-                `${bitrate}k`,
-
-                "-map_metadata",
-                "-1",
+                "-c:a",
+                "copy",
 
                 "-id3v2_version",
                 "3",
 
-                "-codec:a",
-                "libmp3lame",
-
-                "SJ-Merged-Music.mp3"
+                "sj_output.mp3"
 
             ]);
 
 
-        if(
-            result !== 0
-        ){
+        /*
+         * If stream-copy fails because the
+         * MP3 streams are incompatible,
+         * fallback to normal MP3 encoding.
+         */
+
+        if(result !== 0){
+
+            setProgress(
+                30,
+                "MP3 formats differ — converting..."
+            );
+
+
+            status.textContent =
+                "Using compatibility mode...";
+
+
+            result =
+                await ffmpeg.exec([
+
+                    "-hide_banner",
+
+                    "-loglevel",
+                    "error",
+
+                    "-f",
+                    "concat",
+
+                    "-safe",
+                    "0",
+
+                    "-i",
+                    "sj_concat.txt",
+
+                    "-map",
+                    "0:a:0",
+
+                    "-vn",
+
+                    "-c:a",
+                    "libmp3lame",
+
+                    "-b:a",
+                    "192k",
+
+                    "-ar",
+                    "44100",
+
+                    "-ac",
+                    "2",
+
+                    "sj_output.mp3"
+
+                ]);
+
+        }
+
+
+        if(result !== 0){
 
             throw new Error(
-                "FFmpeg failed with code " +
-                result
+                "FFmpeg could not create the output MP3."
             );
 
         }
 
 
-        progressBar.style.width =
-            "100%";
+        setProgress(
+            90,
+            "Creating download file..."
+        );
 
-
-        progressPercent.textContent =
-            "100%";
-
-
-        progressText.textContent =
-            "Complete";
-
-
-        status.textContent =
-            "Your merged MP3 is ready.";
-
-
-        /*
-         * Read output.
-         */
 
         const data =
             await ffmpeg.readFile(
-                "SJ-Merged-Music.mp3"
+                "sj_output.mp3"
             );
 
 
@@ -2084,60 +1488,30 @@ async function mergeMP3(){
             new Blob(
                 [data.buffer],
                 {
-                    type:
-                        "audio/mpeg"
+                    type:"audio/mpeg"
                 }
             );
 
 
-        if(outputURL){
-
-            URL.revokeObjectURL(
-                outputURL
-            );
-
-        }
-
-
         outputURL =
-            URL.createObjectURL(
-                blob
-            );
+            URL.createObjectURL(blob);
 
 
-        /*
-         * IMPORTANT:
-         *
-         * Generate filename from the
-         * ORIGINAL selected songs.
-         */
-
-        const finalFilename =
-            generateOutputFilename();
-
-
-        downloadLink.href =
+        download.href =
             outputURL;
 
 
-        downloadLink.download =
-            finalFilename;
+        download.download =
+            outputName();
 
 
-        downloadArea.classList.add(
-            "show"
+        download.classList.add("show");
+
+
+        setProgress(
+            100,
+            "Complete"
         );
-
-
-        /*
-         * Show final filename.
-         */
-
-        outputPreview.innerHTML =
-            "<strong>Output:</strong> " +
-            escapeHTML(
-                finalFilename
-            );
 
 
         toast(
@@ -2148,56 +1522,136 @@ async function mergeMP3(){
     }catch(error){
 
         console.error(
+            "SJ MP3 MERGER ERROR:",
             error
         );
 
 
-        progressText.textContent =
-            "Conversion failed";
+        setProgress(
+            0,
+            "Merge failed"
+        );
 
 
         status.textContent =
             error?.message ||
-            "Something went wrong.";
-
-
-        progressBar.style.width =
-            "0%";
-
-
-        progressPercent.textContent =
-            "0%";
+            "The browser could not process these files.";
 
 
         toast(
-            "Could not merge MP3 files. Check the browser console for details.",
+            "Could not merge these MP3 files.",
             true
         );
 
     }finally{
 
-        converting =
-            false;
+        busy = false;
 
-
-        mergeButton.disabled =
-            files.length < 2;
+        merge.disabled =
+            songs.length < 2;
 
     }
+
+};
+
+
+/* =========================================================
+   CLEAN TEMP FILES
+========================================================= */
+
+async function cleanupFFmpeg(){
+
+    if(!ffmpeg)
+        return;
+
+
+    const files =
+        [
+            "sj_concat.txt",
+            "sj_output.mp3"
+        ];
+
+
+    for(const name of files){
+
+        try{
+
+            await ffmpeg.deleteFile(name);
+
+        }catch{}
+
+    }
+
+
+    try{
+
+        const root =
+            await ffmpeg.listDir("/");
+
+
+        for(const item of root){
+
+            if(
+                item.name.startsWith("sj_") &&
+                item.name.endsWith(".mp3")
+            ){
+
+                try{
+
+                    await ffmpeg.deleteFile(
+                        item.name
+                    );
+
+                }catch{}
+
+            }
+
+        }
+
+    }catch{}
 
 }
 
 
 /* =========================================================
-   RESET DOWNLOAD
+   PROGRESS
 ========================================================= */
 
-function resetDownload(){
+function setProgress(value,text){
 
-    downloadArea.classList.remove(
-        "show"
-    );
+    value =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                value
+            )
+        );
 
+
+    bar.style.width =
+        value + "%";
+
+
+    percent.textContent =
+        Math.round(value) + "%";
+
+
+    progressText.textContent =
+        text;
+
+}
+
+
+/* =========================================================
+   DOWNLOAD RESET
+========================================================= */
+
+function invalidateDownload(){
+
+    download.classList.remove("show");
+
+    download.removeAttribute("href");
 
     if(outputURL){
 
@@ -2205,9 +1659,7 @@ function resetDownload(){
             outputURL
         );
 
-
-        outputURL =
-            null;
+        outputURL = null;
 
     }
 
@@ -2218,11 +1670,9 @@ function resetDownload(){
    HELPERS
 ========================================================= */
 
-function formatBytes(
-    bytes
-){
+function formatBytes(bytes){
 
-    if(bytes === 0)
+    if(!bytes)
         return "0 Bytes";
 
 
@@ -2243,14 +1693,10 @@ function formatBytes(
 
 
     return (
-        parseFloat(
-            (
-                bytes /
-                Math.pow(
-                    1024,
-                    i
-                )
-            ).toFixed(2)
+        (bytes /
+        Math.pow(1024,i))
+        .toFixed(
+            i === 0 ? 0 : 2
         )
         +
         " " +
@@ -2260,38 +1706,14 @@ function formatBytes(
 }
 
 
-function escapeHTML(
-    value
-){
+function escapeHTML(value){
 
-    return String(
-        value ?? ""
-    )
-
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-
-    .replace(
-        /</g,
-        "&lt;"
-    )
-
-    .replace(
-        />/g,
-        "&gt;"
-    )
-
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-
-    .replace(
-        /'/g,
-        "&#039;"
-    );
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
@@ -2300,7 +1722,7 @@ function escapeHTML(
    INITIAL
 ========================================================= */
 
-renderFiles();
+render();
 
 </script>
 
