@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "name": "MP3 Merger",
+    "description": "Merge multiple MP3 files into one single MP3 file directly in your browser.",
+    "category": "Audio",
+    "folder": "tools/mp3-merger",
+    "version": "1.0.0"
+  }
+]
