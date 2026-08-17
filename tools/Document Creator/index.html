@@ -1,0 +1,2467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Document Creator</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #eef0f3;
+    color: #161616;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app {
+    min-height: 100vh;
+}
+
+/* =========================
+   TOP BAR
+========================= */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    min-height: 64px;
+    background: #ffffff;
+    border-bottom: 1px solid #dcdcdc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 18px;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.top-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    border: 1px solid #cfcfcf;
+    background: #fff;
+    color: #111;
+    border-radius: 7px;
+    min-height: 38px;
+    padding: 7px 13px;
+    font-size: 14px;
+}
+
+.btn:hover {
+    background: #f3f3f3;
+}
+
+.btn-primary {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
+
+.btn-primary:hover {
+    background: #292929;
+}
+
+/* =========================
+   EDITOR
+========================= */
+
+.editor-view {
+    display: block;
+}
+
+.workspace {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* Toolbar */
+
+.toolbar {
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.tool-btn {
+    border: 1px solid #d2d2d2;
+    background: #fff;
+    border-radius: 6px;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 9px;
+}
+
+.tool-btn:hover {
+    background: #f1f1f1;
+}
+
+.toolbar select {
+    height: 36px;
+    border: 1px solid #d2d2d2;
+    border-radius: 6px;
+    background: #fff;
+    padding: 0 8px;
+}
+
+.toolbar input[type="color"] {
+    width: 40px;
+    height: 36px;
+    padding: 3px;
+    border: 1px solid #d2d2d2;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.divider {
+    width: 1px;
+    height: 25px;
+    background: #ddd;
+    margin: 0 3px;
+}
+
+/* Settings */
+
+.settings {
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    padding: 13px;
+    margin-bottom: 12px;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.field label {
+    font-size: 12px;
+    color: #666;
+}
+
+.field input,
+.field select {
+    width: 100%;
+    height: 38px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    padding: 0 9px;
+    background: #fff;
+}
+
+/* Paper area */
+
+.paper-area {
+    background: #dfe2e6;
+    border-radius: 10px;
+    padding: 35px 20px 60px;
+    overflow: auto;
+}
+
+.paper {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 0 auto;
+    padding: 25.4mm;
+    box-shadow: 0 2px 18px rgba(0,0,0,.12);
+}
+
+.editor {
+    min-height: 245mm;
+    outline: none;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.editor:empty::before {
+    content: "Start writing or paste your text here...";
+    color: #aaa;
+}
+
+.editor p {
+    margin: 0 0 10px;
+}
+
+.editor h1 {
+    font-size: 24pt;
+    line-height: 1.2;
+    margin: 0 0 14px;
+}
+
+.editor h2 {
+    font-size: 18pt;
+    line-height: 1.3;
+    margin: 18px 0 10px;
+}
+
+.editor h3 {
+    font-size: 14pt;
+    line-height: 1.4;
+    margin: 15px 0 8px;
+}
+
+.editor ul,
+.editor ol {
+    margin: 8px 0 12px 25px;
+}
+
+.editor img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Selected image */
+
+.editor img.selected-image {
+    outline: 2px solid #222;
+    outline-offset: 3px;
+}
+
+/* Image controls */
+
+.image-controls {
+    position: fixed;
+    display: none;
+    z-index: 300;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0,0,0,.15);
+    padding: 9px;
+    gap: 8px;
+    align-items: center;
+}
+
+.image-controls label {
+    font-size: 12px;
+    color: #555;
+}
+
+.image-controls input {
+    width: 75px;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0 5px;
+}
+
+.image-controls button {
+    height: 30px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 5px;
+}
+
+/* =========================
+   PREVIEW
+========================= */
+
+.preview-view {
+    display: none;
+    min-height: 100vh;
+    background: #dfe2e6;
+    padding: 15px;
+}
+
+.preview-top {
+    max-width: 1280px;
+    margin: 0 auto 15px;
+    background: #fff;
+    border: 1px solid #d6d6d6;
+    border-radius: 9px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 7px;
+}
+
+.preview-scroll {
+    overflow: auto;
+    padding: 20px;
+}
+
+.preview-paper {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 0 auto;
+    padding: 25.4mm;
+    box-shadow: 0 2px 18px rgba(0,0,0,.12);
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+}
+
+.preview-paper p {
+    margin: 0 0 10px;
+}
+
+.preview-paper h1 {
+    font-size: 24pt;
+    line-height: 1.2;
+    margin: 0 0 14px;
+}
+
+.preview-paper h2 {
+    font-size: 18pt;
+    line-height: 1.3;
+    margin: 18px 0 10px;
+}
+
+.preview-paper h3 {
+    font-size: 14pt;
+    line-height: 1.4;
+    margin: 15px 0 8px;
+}
+
+.preview-paper ul,
+.preview-paper ol {
+    margin: 8px 0 12px 25px;
+}
+
+.preview-paper img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 500;
+    background: #111;
+    color: #fff;
+    padding: 9px 13px;
+    border-radius: 7px;
+    font-size: 13px;
+    display: none;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+    .settings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .paper-area {
+        padding: 15px 8px 40px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .top-actions {
+        width: 100%;
+    }
+
+    .top-actions .btn {
+        flex: 1;
+    }
+
+    .workspace {
+        padding: 8px;
+    }
+
+    .toolbar {
+        gap: 5px;
+    }
+
+    .tool-btn {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 7px;
+    }
+
+    .toolbar select {
+        max-width: 135px;
+    }
+
+    .settings-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .field input,
+    .field select {
+        font-size: 13px;
+    }
+
+    .paper-area {
+        padding: 8px 3px 30px;
+    }
+
+    .paper {
+        transform-origin: top left;
+        transform: scale(.65);
+        margin-left: 0;
+        margin-bottom: -103mm;
+    }
+
+    .preview-scroll {
+        padding: 8px 3px 30px;
+    }
+
+    .preview-paper {
+        transform-origin: top left;
+        transform: scale(.65);
+        margin-left: 0;
+        margin-bottom: -103mm;
+    }
+
+    .preview-top {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .preview-actions {
+        width: 100%;
+    }
+
+    .preview-actions .btn {
+        flex: 1;
+    }
+
+    .image-controls {
+        max-width: calc(100vw - 20px);
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 380px) {
+
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .paper {
+        transform: scale(.55);
+        margin-bottom: -133mm;
+    }
+
+    .preview-paper {
+        transform: scale(.55);
+        margin-bottom: -133mm;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- =========================
+     EDITOR VIEW
+========================= -->
+
+<div class="editor-view" id="editorView">
+
+<header class="topbar">
+
+    <div class="logo">Document Creator</div>
+
+    <div class="top-actions">
+        <button class="btn" id="previewBtn">
+            Live Preview
+        </button>
+
+        <button class="btn btn-primary" id="downloadBtn">
+            Download PDF
+        </button>
+    </div>
+
+</header>
+
+<main class="workspace">
+
+    <!-- Formatting toolbar -->
+
+    <div class="toolbar">
+
+        <button class="tool-btn" data-command="bold"><b>B</b></button>
+        <button class="tool-btn" data-command="italic"><i>I</i></button>
+        <button class="tool-btn" data-command="underline"><u>U</u></button>
+
+        <div class="divider"></div>
+
+        <select id="blockFormat">
+            <option value="p">Normal</option>
+            <option value="h1">Heading 1</option>
+            <option value="h2">Heading 2</option>
+            <option value="h3">Heading 3</option>
+        </select>
+
+        <select id="fontSize">
+            <option value="12">12 pt</option>
+            <option value="10">10 pt</option>
+            <option value="11">11 pt</option>
+            <option value="13">13 pt</option>
+            <option value="14">14 pt</option>
+            <option value="16">16 pt</option>
+            <option value="18">18 pt</option>
+            <option value="20">20 pt</option>
+            <option value="24">24 pt</option>
+        </select>
+
+        <select id="fontFamily">
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Courier New">Courier New</option>
+        </select>
+
+        <input type="color" id="textColor" value="#000000">
+
+        <div class="divider"></div>
+
+        <button class="tool-btn" data-command="justifyLeft">L</button>
+        <button class="tool-btn" data-command="justifyCenter">C</button>
+        <button class="tool-btn" data-command="justifyRight">R</button>
+        <button class="tool-btn" data-command="justifyFull">J</button>
+
+        <div class="divider"></div>
+
+        <button class="tool-btn" data-command="insertUnorderedList">• List</button>
+        <button class="tool-btn" data-command="insertOrderedList">1. List</button>
+
+        <div class="divider"></div>
+
+        <button class="tool-btn" id="undoBtn">↶</button>
+        <button class="tool-btn" id="redoBtn">↷</button>
+
+        <button class="tool-btn" id="imageBtn">Image</button>
+
+    </div>
+
+    <!-- Document settings -->
+
+    <section class="settings">
+
+        <div class="settings-grid">
+
+            <div class="field">
+                <label>Document Title</label>
+                <input
+                    type="text"
+                    id="documentTitle"
+                    placeholder="My Document"
+                >
+            </div>
+
+            <div class="field">
+                <label>Page Size</label>
+                <select id="pageSize">
+                    <option value="A4">A4</option>
+                    <option value="A5">A5</option>
+                    <option value="Letter">Letter</option>
+                    <option value="Legal">Legal</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Orientation</label>
+                <select id="orientation">
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Margins</label>
+                <select id="margin">
+                    <option value="25.4">Normal</option>
+                    <option value="15">Narrow</option>
+                    <option value="35">Wide</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Page Numbers</label>
+                <select id="pageNumbers">
+                    <option value="yes">Show</option>
+                    <option value="no">Hide</option>
+                </select>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Paper -->
+
+    <section class="paper-area">
+
+        <div class="paper" id="paper">
+
+            <div
+                id="editor"
+                class="editor"
+                contenteditable="true"
+                spellcheck="true"
+            ></div>
+
+        </div>
+
+    </section>
+
+</main>
+
+</div>
+
+<!-- =========================
+     PREVIEW VIEW
+========================= -->
+
+<div class="preview-view" id="previewView">
+
+    <div class="preview-top">
+
+        <button class="btn" id="backEditBtn">
+            ← Back to Edit
+        </button>
+
+        <div class="preview-actions">
+
+            <button class="btn" id="printBtn">
+                Print
+            </button>
+
+            <button class="btn btn-primary" id="previewDownloadBtn">
+                Download PDF
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="preview-scroll">
+
+        <div class="preview-paper" id="previewPaper"></div>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- Image controls -->
+
+<div class="image-controls" id="imageControls">
+
+    <label>Width</label>
+
+    <input
+        type="number"
+        id="imageWidth"
+        min="20"
+        max="1000"
+    >
+
+    <span>px</span>
+
+    <button id="imageDeleteBtn">
+        Delete
+    </button>
+
+</div>
+
+<div class="status" id="status"></div>
+
+<script>
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const editor = document.getElementById("editor");
+const editorView = document.getElementById("editorView");
+const previewView = document.getElementById("previewView");
+const previewPaper = document.getElementById("previewPaper");
+
+const documentTitle = document.getElementById("documentTitle");
+const pageSize = document.getElementById("pageSize");
+const orientation = document.getElementById("orientation");
+const margin = document.getElementById("margin");
+const pageNumbers = document.getElementById("pageNumbers");
+
+const statusBox = document.getElementById("status");
+
+const imageControls = document.getElementById("imageControls");
+const imageWidth = document.getElementById("imageWidth");
+
+let selectedImage = null;
+
+
+/* =========================================
+   DEFAULT DOCUMENT
+========================================= */
+
+function createDefaultDocument() {
+
+    if (editor.innerHTML.trim()) return;
+
+    editor.innerHTML = "<p><br></p>";
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+let statusTimer;
+
+function showStatus(message) {
+
+    statusBox.textContent = message;
+    statusBox.style.display = "block";
+
+    clearTimeout(statusTimer);
+
+    statusTimer = setTimeout(() => {
+        statusBox.style.display = "none";
+    }, 1200);
+}
+
+
+/* =========================================
+   SAVE
+========================================= */
+
+function saveDocument() {
+
+    localStorage.setItem(
+        "dc-content",
+        editor.innerHTML
+    );
+
+    localStorage.setItem(
+        "dc-title",
+        documentTitle.value
+    );
+
+    localStorage.setItem(
+        "dc-page-size",
+        pageSize.value
+    );
+
+    localStorage.setItem(
+        "dc-orientation",
+        orientation.value
+    );
+
+    localStorage.setItem(
+        "dc-margin",
+        margin.value
+    );
+
+    localStorage.setItem(
+        "dc-page-numbers",
+        pageNumbers.value
+    );
+}
+
+
+/* =========================================
+   LOAD
+========================================= */
+
+function loadDocument() {
+
+    const content =
+        localStorage.getItem("dc-content");
+
+    if (content) {
+        editor.innerHTML = content;
+    }
+
+    const title =
+        localStorage.getItem("dc-title");
+
+    if (title !== null) {
+        documentTitle.value = title;
+    }
+
+    const savedSize =
+        localStorage.getItem("dc-page-size");
+
+    if (savedSize) {
+        pageSize.value = savedSize;
+    }
+
+    const savedOrientation =
+        localStorage.getItem("dc-orientation");
+
+    if (savedOrientation) {
+        orientation.value = savedOrientation;
+    }
+
+    const savedMargin =
+        localStorage.getItem("dc-margin");
+
+    if (savedMargin) {
+        margin.value = savedMargin;
+    }
+
+    const savedPageNumbers =
+        localStorage.getItem("dc-page-numbers");
+
+    if (savedPageNumbers) {
+        pageNumbers.value = savedPageNumbers;
+    }
+
+    createDefaultDocument();
+}
+
+
+/* =========================================
+   FORMATTING
+========================================= */
+
+document.querySelectorAll("[data-command]")
+.forEach(button => {
+
+    button.addEventListener("mousedown", event => {
+        event.preventDefault();
+    });
+
+    button.addEventListener("click", () => {
+
+        editor.focus();
+
+        document.execCommand(
+            button.dataset.command,
+            false,
+            null
+        );
+
+        saveDocument();
+    });
+
+});
+
+
+document
+.getElementById("blockFormat")
+.addEventListener("change", function() {
+
+    editor.focus();
+
+    document.execCommand(
+        "formatBlock",
+        false,
+        this.value
+    );
+
+    saveDocument();
+});
+
+
+document
+.getElementById("fontFamily")
+.addEventListener("change", function() {
+
+    editor.focus();
+
+    document.execCommand(
+        "fontName",
+        false,
+        this.value
+    );
+
+    saveDocument();
+});
+
+
+document
+.getElementById("fontSize")
+.addEventListener("change", function() {
+
+    editor.focus();
+
+    document.execCommand(
+        "fontSize",
+        false,
+        "7"
+    );
+
+    editor
+        .querySelectorAll('font[size="7"]')
+        .forEach(el => {
+
+            el.removeAttribute("size");
+            el.style.fontSize =
+                this.value + "pt";
+
+        });
+
+    saveDocument();
+});
+
+
+document
+.getElementById("textColor")
+.addEventListener("input", function() {
+
+    editor.focus();
+
+    document.execCommand(
+        "foreColor",
+        false,
+        this.value
+    );
+
+    saveDocument();
+});
+
+
+/* =========================================
+   UNDO / REDO
+========================================= */
+
+document
+.getElementById("undoBtn")
+.addEventListener("click", () => {
+
+    editor.focus();
+    document.execCommand("undo");
+    saveDocument();
+
+});
+
+
+document
+.getElementById("redoBtn")
+.addEventListener("click", () => {
+
+    editor.focus();
+    document.execCommand("redo");
+    saveDocument();
+
+});
+
+
+/* =========================================
+   IMAGE INSERT
+========================================= */
+
+document
+.getElementById("imageBtn")
+.addEventListener("click", () => {
+
+    const input =
+        document.createElement("input");
+
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = () => {
+
+        const file = input.files[0];
+
+        if (!file) return;
+
+        const reader =
+            new FileReader();
+
+        reader.onload = event => {
+
+            const img =
+                document.createElement("img");
+
+            img.src = event.target.result;
+
+            img.style.maxWidth = "100%";
+            img.style.width = "auto";
+            img.style.height = "auto";
+            img.style.display = "block";
+            img.style.margin = "12px 0";
+
+            const selection =
+                window.getSelection();
+
+            editor.focus();
+
+            if (
+                selection &&
+                selection.rangeCount
+            ) {
+
+                const range =
+                    selection.getRangeAt(0);
+
+                range.deleteContents();
+                range.insertNode(img);
+
+                range.setStartAfter(img);
+                range.collapse(true);
+
+                selection.removeAllRanges();
+                selection.addRange(range);
+
+            } else {
+
+                editor.appendChild(img);
+
+            }
+
+            saveDocument();
+
+        };
+
+        reader.readAsDataURL(file);
+
+    };
+
+    input.click();
+
+});
+
+
+/* =========================================
+   IMAGE SELECT
+========================================= */
+
+editor.addEventListener("click", event => {
+
+    if (event.target.tagName !== "IMG") {
+
+        deselectImage();
+        return;
+
+    }
+
+    selectImage(event.target);
+
+});
+
+
+function selectImage(img) {
+
+    deselectImage();
+
+    selectedImage = img;
+
+    selectedImage.classList.add(
+        "selected-image"
+    );
+
+    imageWidth.value =
+        Math.round(
+            selectedImage.getBoundingClientRect().width
+        );
+
+    updateImageControlsPosition();
+
+}
+
+
+function deselectImage() {
+
+    if (selectedImage) {
+
+        selectedImage.classList.remove(
+            "selected-image"
+        );
+
+    }
+
+    selectedImage = null;
+
+    imageControls.style.display = "none";
+
+}
+
+
+function updateImageControlsPosition() {
+
+    if (!selectedImage) return;
+
+    const rect =
+        selectedImage.getBoundingClientRect();
+
+    imageControls.style.display = "flex";
+
+    let top =
+        rect.top - 50;
+
+    let left =
+        rect.left;
+
+    if (top < 70) {
+        top = rect.bottom + 8;
+    }
+
+    left =
+        Math.min(
+            left,
+            window.innerWidth -
+            imageControls.offsetWidth -
+            10
+        );
+
+    imageControls.style.top =
+        Math.max(10, top) + "px";
+
+    imageControls.style.left =
+        Math.max(10, left) + "px";
+
+}
+
+
+window.addEventListener(
+    "scroll",
+    updateImageControlsPosition,
+    true
+);
+
+window.addEventListener(
+    "resize",
+    updateImageControlsPosition
+);
+
+
+/* =========================================
+   IMAGE RESIZE
+========================================= */
+
+imageWidth.addEventListener("input", () => {
+
+    if (!selectedImage) return;
+
+    const width =
+        parseInt(imageWidth.value, 10);
+
+    if (
+        Number.isFinite(width) &&
+        width >= 20
+    ) {
+
+        selectedImage.style.width =
+            width + "px";
+
+        selectedImage.style.maxWidth =
+            "100%";
+
+        selectedImage.style.height =
+            "auto";
+
+        saveDocument();
+
+    }
+
+});
+
+
+document
+.getElementById("imageDeleteBtn")
+.addEventListener("click", () => {
+
+    if (!selectedImage) return;
+
+    selectedImage.remove();
+
+    deselectImage();
+
+    saveDocument();
+
+});
+
+
+/* =========================================
+   SMART PASTE
+========================================= */
+
+editor.addEventListener(
+    "paste",
+    event => {
+
+        const clipboard =
+            event.clipboardData;
+
+        if (!clipboard) return;
+
+        const html =
+            clipboard.getData("text/html");
+
+        const text =
+            clipboard.getData("text/plain");
+
+        /*
+         * If rich HTML exists and appears
+         * to contain useful formatting,
+         * preserve it.
+         */
+        if (
+            html &&
+            html.replace(/<[^>]*>/g, "").trim()
+        ) {
+
+            event.preventDefault();
+
+            const cleaned =
+                cleanPastedHTML(html);
+
+            insertHTMLAtCursor(cleaned);
+
+            saveDocument();
+
+            return;
+        }
+
+        /*
+         * Plain text:
+         * intelligently structure it.
+         */
+
+        if (!text) return;
+
+        event.preventDefault();
+
+        const structured =
+            smartFormatText(text);
+
+        insertHTMLAtCursor(structured);
+
+        saveDocument();
+
+    }
+);
+
+
+/* =========================================
+   CLEAN PASTED HTML
+========================================= */
+
+function cleanPastedHTML(html) {
+
+    const parser =
+        new DOMParser();
+
+    const doc =
+        parser.parseFromString(
+            html,
+            "text/html"
+        );
+
+    doc
+        .querySelectorAll(
+            "script,style,meta,link"
+        )
+        .forEach(el => el.remove());
+
+    /*
+     * Remove common copy/paste
+     * editor wrappers.
+     */
+
+    return doc.body.innerHTML;
+
+}
+
+
+/* =========================================
+   SMART TEXT FORMATTER
+========================================= */
+
+function smartFormatText(text) {
+
+    const normalized =
+        text
+            .replace(/\r\n/g, "\n")
+            .replace(/\r/g, "\n")
+            .replace(/\u00A0/g, " ");
+
+    const lines =
+        normalized
+            .split("\n")
+            .map(line => line.trim());
+
+    let html = "";
+
+    let paragraphBuffer = [];
+
+    function flushParagraph() {
+
+        if (!paragraphBuffer.length)
+            return;
+
+        const paragraph =
+            paragraphBuffer.join(" ").trim();
+
+        if (paragraph) {
+
+            html +=
+                "<p>" +
+                escapeHTML(paragraph) +
+                "</p>";
+
+        }
+
+        paragraphBuffer = [];
+
+    }
+
+    for (
+        let i = 0;
+        i < lines.length;
+        i++
+    ) {
+
+        const line = lines[i];
+
+        if (!line) {
+
+            flushParagraph();
+            continue;
+
+        }
+
+        /*
+         * Markdown headings
+         */
+
+        if (/^#{1}\s+/.test(line)) {
+
+            flushParagraph();
+
+            html +=
+                "<h1>" +
+                escapeHTML(
+                    line.replace(/^#\s+/, "")
+                ) +
+                "</h1>";
+
+            continue;
+        }
+
+        if (/^#{2}\s+/.test(line)) {
+
+            flushParagraph();
+
+            html +=
+                "<h2>" +
+                escapeHTML(
+                    line.replace(/^##\s+/, "")
+                ) +
+                "</h2>";
+
+            continue;
+        }
+
+        if (/^#{3}\s+/.test(line)) {
+
+            flushParagraph();
+
+            html +=
+                "<h3>" +
+                escapeHTML(
+                    line.replace(/^###\s+/, "")
+                ) +
+                "</h3>";
+
+            continue;
+        }
+
+        /*
+         * Bullet list
+         */
+
+        if (
+            /^[-*•]\s+/.test(line)
+        ) {
+
+            flushParagraph();
+
+            let listItems = [];
+
+            while (
+                i < lines.length &&
+                /^[-*•]\s+/.test(lines[i])
+            ) {
+
+                listItems.push(
+                    "<li>" +
+                    escapeHTML(
+                        lines[i]
+                        .replace(/^[-*•]\s+/, "")
+                    ) +
+                    "</li>"
+                );
+
+                i++;
+
+            }
+
+            i--;
+
+            html +=
+                "<ul>" +
+                listItems.join("") +
+                "</ul>";
+
+            continue;
+        }
+
+        /*
+         * Numbered list
+         */
+
+        if (
+            /^\d+[.)]\s+/.test(line)
+        ) {
+
+            flushParagraph();
+
+            let listItems = [];
+
+            while (
+                i < lines.length &&
+                /^\d+[.)]\s+/.test(lines[i])
+            ) {
+
+                listItems.push(
+                    "<li>" +
+                    escapeHTML(
+                        lines[i]
+                        .replace(
+                            /^\d+[.)]\s+/,
+                            ""
+                        )
+                    ) +
+                    "</li>"
+                );
+
+                i++;
+
+            }
+
+            i--;
+
+            html +=
+                "<ol>" +
+                listItems.join("") +
+                "</ol>";
+
+            continue;
+        }
+
+        /*
+         * Separator
+         */
+
+        if (
+            /^[-_=]{3,}$/.test(line)
+        ) {
+
+            flushParagraph();
+
+            html += "<hr>";
+
+            continue;
+        }
+
+        /*
+         * Title / heading detection.
+         *
+         * Short standalone lines followed
+         * by a paragraph are treated as
+         * headings.
+         */
+
+        const nextLine =
+            lines[i + 1] || "";
+
+        const isShort =
+            line.length <= 90;
+
+        const hasSentenceEnding =
+            /[.!?।:]$/.test(line);
+
+        const looksLikeHeading =
+            isShort &&
+            !hasSentenceEnding &&
+            nextLine.length > line.length &&
+            !/^[-*•]\s+/.test(nextLine) &&
+            !/^\d+[.)]\s+/.test(nextLine);
+
+        if (looksLikeHeading) {
+
+            flushParagraph();
+
+            html +=
+                "<h2>" +
+                escapeHTML(line) +
+                "</h2>";
+
+            continue;
+        }
+
+        /*
+         * Normal paragraph.
+         */
+
+        paragraphBuffer.push(line);
+
+    }
+
+    flushParagraph();
+
+    return html ||
+        "<p>" +
+        escapeHTML(normalized) +
+        "</p>";
+
+}
+
+
+/* =========================================
+   HTML ESCAPE
+========================================= */
+
+function escapeHTML(text) {
+
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================
+   INSERT HTML AT CURSOR
+========================================= */
+
+function insertHTMLAtCursor(html) {
+
+    editor.focus();
+
+    const selection =
+        window.getSelection();
+
+    if (
+        !selection ||
+        !selection.rangeCount
+    ) {
+
+        editor.insertAdjacentHTML(
+            "beforeend",
+            html
+        );
+
+        return;
+
+    }
+
+    const range =
+        selection.getRangeAt(0);
+
+    range.deleteContents();
+
+    const fragment =
+        range.createContextualFragment(
+            html
+        );
+
+    const lastNode =
+        fragment.lastChild;
+
+    range.insertNode(fragment);
+
+    if (lastNode) {
+
+        range.setStartAfter(lastNode);
+        range.collapse(true);
+
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+    }
+
+}
+
+
+/* =========================================
+   PREVIEW
+========================================= */
+
+document
+.getElementById("previewBtn")
+.addEventListener("click", () => {
+
+    updatePreview();
+
+    editorView.style.display = "none";
+    previewView.style.display = "block";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "instant"
+    });
+
+});
+
+
+function updatePreview() {
+
+    previewPaper.innerHTML =
+        editor.innerHTML;
+
+    applyPageSettings(
+        previewPaper
+    );
+
+}
+
+
+/* =========================================
+   BACK TO EDIT
+========================================= */
+
+document
+.getElementById("backEditBtn")
+.addEventListener("click", () => {
+
+    previewView.style.display = "none";
+    editorView.style.display = "block";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "instant"
+    });
+
+});
+
+
+/* =========================================
+   PAGE SIZE
+========================================= */
+
+function getPageDimensions() {
+
+    let width = 210;
+    let height = 297;
+
+    if (pageSize.value === "A5") {
+        width = 148;
+        height = 210;
+    }
+
+    if (pageSize.value === "Letter") {
+        width = 216;
+        height = 279;
+    }
+
+    if (pageSize.value === "Legal") {
+        width = 216;
+        height = 356;
+    }
+
+    if (
+        orientation.value ===
+        "landscape"
+    ) {
+
+        const temp = width;
+
+        width = height;
+        height = temp;
+
+    }
+
+    return {
+        width,
+        height
+    };
+
+}
+
+
+function applyPageSettings(element) {
+
+    const dimensions =
+        getPageDimensions();
+
+    element.style.width =
+        dimensions.width + "mm";
+
+    element.style.minHeight =
+        dimensions.height + "mm";
+
+    element.style.padding =
+        margin.value + "mm";
+
+}
+
+
+/* =========================================
+   PDF GENERATION
+========================================= */
+
+async function generatePDF() {
+
+    if (!window.jspdf) {
+
+        alert(
+            "PDF engine could not be loaded. Please check your internet connection and try again."
+        );
+
+        return;
+
+    }
+
+    const { jsPDF } =
+        window.jspdf;
+
+    const dimensions =
+        getPageDimensions();
+
+    const pdfFormat =
+        pageSize.value.toLowerCase();
+
+    const pdf =
+        new jsPDF({
+            orientation:
+                orientation.value,
+            unit: "mm",
+            format: pdfFormat,
+            compress: true
+        });
+
+    /*
+     * Build PDF directly from the editor
+     * instead of converting the entire
+     * document into one giant image.
+     */
+
+    const marginMM =
+        parseFloat(margin.value);
+
+    const pageWidth =
+        pdf.internal.pageSize.getWidth();
+
+    const pageHeight =
+        pdf.internal.pageSize.getHeight();
+
+    const usableWidth =
+        pageWidth -
+        marginMM * 2;
+
+    const usableHeight =
+        pageHeight -
+        marginMM * 2;
+
+    const clone =
+        editor.cloneNode(true);
+
+    clone.style.position = "fixed";
+    clone.style.left = "-100000px";
+    clone.style.top = "0";
+    clone.style.width =
+        usableWidth + "mm";
+    clone.style.minHeight = "auto";
+    clone.style.padding = "0";
+    clone.style.background = "#fff";
+    clone.style.color = "#000";
+    clone.style.fontFamily =
+        "Arial, Helvetica, sans-serif";
+    clone.style.fontSize = "12pt";
+    clone.style.lineHeight = "1.5";
+
+    document.body.appendChild(clone);
+
+    const blocks =
+        getPDFBlocks(clone);
+
+    let y =
+        marginMM;
+
+    let page =
+        1;
+
+    for (
+        let i = 0;
+        i < blocks.length;
+        i++
+    ) {
+
+        const block =
+            blocks[i];
+
+        if (
+            block.type === "image"
+        ) {
+
+            const img =
+                block.element;
+
+            await waitForImage(img);
+
+            const naturalWidth =
+                img.naturalWidth || 800;
+
+            const naturalHeight =
+                img.naturalHeight || 600;
+
+            const maxWidth =
+                usableWidth;
+
+            let imgWidth =
+                Math.min(
+                    maxWidth,
+                    naturalWidth * 0.264583
+                );
+
+            let imgHeight =
+                imgWidth *
+                naturalHeight /
+                naturalWidth;
+
+            if (
+                y + imgHeight >
+                pageHeight - marginMM
+            ) {
+
+                addPageNumber(
+                    pdf,
+                    page,
+                    pageWidth,
+                    pageHeight
+                );
+
+                pdf.addPage();
+
+                page++;
+
+                y =
+                    marginMM;
+
+            }
+
+            const dataURL =
+                await imageToDataURL(img);
+
+            pdf.addImage(
+                dataURL,
+                getImageType(img.src),
+                marginMM,
+                y,
+                imgWidth,
+                imgHeight
+            );
+
+            y +=
+                imgHeight + 6;
+
+            continue;
+
+        }
+
+        const text =
+            block.element.innerText
+                .replace(/\n+/g, "\n")
+                .trim();
+
+        if (!text) continue;
+
+        const style =
+            getBlockStyle(
+                block.element
+            );
+
+        pdf.setFont(
+            style.font,
+            style.fontStyle
+        );
+
+        pdf.setFontSize(
+            style.size
+        );
+
+        pdf.setTextColor(
+            style.color.r,
+            style.color.g,
+            style.color.b
+        );
+
+        const lines =
+            pdf.splitTextToSize(
+                text,
+                usableWidth
+            );
+
+        const lineHeight =
+            style.lineHeight;
+
+        const blockHeight =
+            lines.length *
+            lineHeight;
+
+        const topGap =
+            style.marginTop;
+
+        const bottomGap =
+            style.marginBottom;
+
+        if (
+            y +
+            topGap +
+            blockHeight +
+            bottomGap >
+            pageHeight - marginMM
+        ) {
+
+            addPageNumber(
+                pdf,
+                page,
+                pageWidth,
+                pageHeight
+            );
+
+            pdf.addPage();
+
+            page++;
+
+            y =
+                marginMM;
+
+        }
+
+        y += topGap;
+
+        pdf.text(
+            lines,
+            marginMM,
+            y + style.size * 0.35
+        );
+
+        y +=
+            blockHeight +
+            bottomGap;
+
+    }
+
+    addPageNumber(
+        pdf,
+        page,
+        pageWidth,
+        pageHeight
+    );
+
+    document.body.removeChild(clone);
+
+    const filename =
+        sanitizeFilename(
+            documentTitle.value ||
+            "My Document"
+        );
+
+    pdf.save(
+        filename + ".pdf"
+    );
+
+}
+
+
+/* =========================================
+   GET BLOCKS
+========================================= */
+
+function getPDFBlocks(root) {
+
+    const blocks = [];
+
+    function walk(node) {
+
+        node.childNodes.forEach(child => {
+
+            if (
+                child.nodeType !==
+                Node.ELEMENT_NODE
+            ) return;
+
+            const tag =
+                child.tagName.toLowerCase();
+
+            if (
+                tag === "img"
+            ) {
+
+                blocks.push({
+                    type: "image",
+                    element: child
+                });
+
+                return;
+
+            }
+
+            if (
+                [
+                    "p",
+                    "h1",
+                    "h2",
+                    "h3",
+                    "li",
+                    "blockquote",
+                    "pre"
+                ].includes(tag)
+            ) {
+
+                blocks.push({
+                    type: "text",
+                    element: child
+                });
+
+                return;
+
+            }
+
+            if (
+                tag === "ul" ||
+                tag === "ol"
+            ) {
+
+                child.childNodes.forEach(
+                    li => {
+
+                        if (
+                            li.nodeType ===
+                            Node.ELEMENT_NODE &&
+                            li.tagName.toLowerCase() ===
+                            "li"
+                        ) {
+
+                            blocks.push({
+                                type: "text",
+                                element: li
+                            });
+
+                        }
+
+                    }
+                );
+
+                return;
+
+            }
+
+            walk(child);
+
+        });
+
+    }
+
+    walk(root);
+
+    return blocks;
+
+}
+
+
+/* =========================================
+   BLOCK STYLE
+========================================= */
+
+function getBlockStyle(element) {
+
+    const tag =
+        element.tagName.toLowerCase();
+
+    let size = 12;
+    let font = "helvetica";
+    let fontStyle = "normal";
+
+    let lineHeight = 5.8;
+
+    let marginTop = 0;
+    let marginBottom = 4;
+
+    if (tag === "h1") {
+
+        size = 24;
+        fontStyle = "bold";
+        lineHeight = 9;
+        marginTop = 3;
+        marginBottom = 6;
+
+    }
+
+    else if (tag === "h2") {
+
+        size = 18;
+        fontStyle = "bold";
+        lineHeight = 7;
+        marginTop = 5;
+        marginBottom = 4;
+
+    }
+
+    else if (tag === "h3") {
+
+        size = 14;
+        fontStyle = "bold";
+        lineHeight = 6;
+        marginTop = 4;
+        marginBottom = 3;
+
+    }
+
+    else if (tag === "li") {
+
+        size = 12;
+        lineHeight = 5.8;
+        marginBottom = 2;
+
+    }
+
+    /*
+     * Detect bold text.
+     */
+
+    if (
+        element.querySelector("b,strong")
+    ) {
+
+        fontStyle = "bold";
+
+    }
+
+    return {
+        size,
+        font,
+        fontStyle,
+        lineHeight,
+        marginTop,
+        marginBottom,
+        color: {
+            r: 0,
+            g: 0,
+            b: 0
+        }
+    };
+
+}
+
+
+/* =========================================
+   PAGE NUMBERS
+========================================= */
+
+function addPageNumber(
+    pdf,
+    page,
+    pageWidth,
+    pageHeight
+) {
+
+    if (
+        pageNumbers.value !== "yes"
+    ) return;
+
+    pdf.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    pdf.setFontSize(9);
+
+    pdf.setTextColor(
+        100,
+        100,
+        100
+    );
+
+    pdf.text(
+        String(page),
+        pageWidth / 2,
+        pageHeight - 7,
+        {
+            align: "center"
+        }
+    );
+
+}
+
+
+/* =========================================
+   IMAGE HELPERS
+========================================= */
+
+function waitForImage(img) {
+
+    return new Promise(resolve => {
+
+        if (img.complete) {
+            resolve();
+            return;
+        }
+
+        img.onload = resolve;
+        img.onerror = resolve;
+
+    });
+
+}
+
+
+async function imageToDataURL(img) {
+
+    try {
+
+        const canvas =
+            document.createElement("canvas");
+
+        canvas.width =
+            img.naturalWidth || 800;
+
+        canvas.height =
+            img.naturalHeight || 600;
+
+        const ctx =
+            canvas.getContext("2d");
+
+        ctx.drawImage(
+            img,
+            0,
+            0
+        );
+
+        return canvas.toDataURL(
+            "image/jpeg",
+            .92
+        );
+
+    } catch (error) {
+
+        return img.src;
+
+    }
+
+}
+
+
+function getImageType(src) {
+
+    if (
+        src.startsWith("data:image/png")
+    ) {
+        return "PNG";
+    }
+
+    return "JPEG";
+
+}
+
+
+/* =========================================
+   SAFE FILENAME
+========================================= */
+
+function sanitizeFilename(name) {
+
+    return name
+        .replace(/[\\/:*?"<>|]/g, "_")
+        .trim()
+        .substring(0, 120)
+        || "My_Document";
+
+}
+
+
+/* =========================================
+   DOWNLOAD
+========================================= */
+
+document
+.getElementById("downloadBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        showStatus(
+            "Creating PDF..."
+        );
+
+        try {
+
+            await generatePDF();
+
+            showStatus(
+                "PDF downloaded"
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "PDF could not be created. Please try again."
+            );
+
+        }
+
+    }
+);
+
+
+document
+.getElementById("previewDownloadBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        showStatus(
+            "Creating PDF..."
+        );
+
+        try {
+
+            await generatePDF();
+
+            showStatus(
+                "PDF downloaded"
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "PDF could not be created. Please try again."
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   PRINT
+========================================= */
+
+document
+.getElementById("printBtn")
+.addEventListener(
+    "click",
+    () => {
+
+        window.print();
+
+    }
+);
+
+
+/* =========================================
+   SETTINGS AUTO SAVE
+========================================= */
+
+[
+    documentTitle,
+    pageSize,
+    orientation,
+    margin,
+    pageNumbers
+].forEach(element => {
+
+    element.addEventListener(
+        "input",
+        saveDocument
+    );
+
+    element.addEventListener(
+        "change",
+        saveDocument
+    );
+
+});
+
+
+editor.addEventListener(
+    "input",
+    saveDocument
+);
+
+
+/* =========================================
+   INITIALIZE
+========================================= */
+
+loadDocument();
+
+</script>
+
+</body>
+</html>
