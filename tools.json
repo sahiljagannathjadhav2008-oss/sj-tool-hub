@@ -19,5 +19,12 @@
   "category": "Productivity",
   "folder": "tools/document-creator",
   "version": "1.0.0"
-}
+ },
+  {
+    "name": "Receipt & Bill Generator",
+    "description": "Create professional purchase bills and sales bills with item-wise discounts, IGST, CGST, SGST, logo, optional signatures and PDF download.",
+    "category": "Business",
+    "folder": "tools/receipt-generator",
+    "version": "2.0.0"
+  }
 ]
