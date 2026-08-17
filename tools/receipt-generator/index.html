@@ -1,0 +1,4309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Receipt & Bill Generator</title>
+
+<!-- PDF libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#eef1f4;
+    color:#151515;
+}
+
+body{
+    min-height:100vh;
+}
+
+button,
+input,
+select,
+textarea{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.topbar{
+    position:sticky;
+    top:0;
+    z-index:100;
+    min-height:64px;
+    padding:10px 18px;
+    background:#fff;
+    border-bottom:1px solid #ddd;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.title{
+    font-size:20px;
+    font-weight:700;
+}
+
+.top-actions{
+    display:flex;
+    gap:8px;
+}
+
+.btn{
+    min-height:38px;
+    padding:8px 14px;
+    border-radius:7px;
+    border:1px solid #ccc;
+    background:#fff;
+    color:#111;
+}
+
+.btn:hover{
+    background:#f3f3f3;
+}
+
+.btn-primary{
+    background:#111;
+    border-color:#111;
+    color:#fff;
+}
+
+.btn-primary:hover{
+    background:#292929;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    max-width:1500px;
+    margin:auto;
+    padding:18px;
+}
+
+.layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:18px;
+    align-items:start;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-panel{
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:12px;
+    overflow:hidden;
+    min-width:0;
+}
+
+.form-header{
+    padding:17px;
+    border-bottom:1px solid #e4e4e4;
+}
+
+.form-header h2{
+    margin:0 0 5px;
+    font-size:18px;
+}
+
+.form-header p{
+    margin:0;
+    font-size:13px;
+    color:#777;
+}
+
+.section{
+    padding:16px;
+    border-bottom:1px solid #e7e7e7;
+}
+
+.section:last-child{
+    border-bottom:0;
+}
+
+.section-title{
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:12px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+}
+
+.grid-3{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:11px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    min-width:0;
+}
+
+.field.full{
+    grid-column:1/-1;
+}
+
+.field label{
+    font-size:12px;
+    color:#666;
+}
+
+.field input,
+.field select,
+.field textarea{
+    width:100%;
+    border:1px solid #d0d0d0;
+    border-radius:6px;
+    background:#fff;
+    padding:9px 10px;
+    outline:none;
+}
+
+.field input,
+.field select{
+    height:39px;
+}
+
+.field textarea{
+    min-height:75px;
+    resize:vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+    border-color:#777;
+}
+
+/* =========================
+   TYPE SWITCH
+========================= */
+
+.type-switch{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    border:1px solid #d3d3d3;
+    border-radius:8px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+
+.type-switch label{
+    cursor:pointer;
+    text-align:center;
+    padding:12px;
+    font-size:13px;
+    font-weight:600;
+    background:#fafafa;
+}
+
+.type-switch input{
+    display:none;
+}
+
+.type-switch label.active{
+    background:#111;
+    color:#fff;
+}
+
+/* =========================
+   UPLOAD
+========================= */
+
+.upload-box{
+    border:1px dashed #c9c9c9;
+    border-radius:8px;
+    padding:12px;
+    background:#fafafa;
+}
+
+.upload-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.upload-preview{
+    width:72px;
+    height:52px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
+}
+
+.upload-preview img{
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+}
+
+.upload-info{
+    flex:1;
+}
+
+.upload-info strong{
+    display:block;
+    font-size:13px;
+    margin-bottom:3px;
+}
+
+.upload-info small{
+    color:#777;
+}
+
+/* =========================
+   ITEM CARDS
+========================= */
+
+.items-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.item-card{
+    border:1px solid #dcdcdc;
+    border-radius:9px;
+    padding:12px;
+    background:#fff;
+}
+
+.item-top{
+    display:grid;
+    grid-template-columns:minmax(180px,2fr) 90px 120px 120px 38px;
+    gap:8px;
+    align-items:end;
+}
+
+.item-field{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+.item-field label{
+    font-size:11px;
+    color:#666;
+}
+
+.item-field input,
+.item-field select{
+    width:100%;
+    height:38px;
+    border:1px solid #d0d0d0;
+    border-radius:6px;
+    padding:7px 8px;
+    background:#fff;
+    outline:none;
+}
+
+.item-field input:focus,
+.item-field select:focus{
+    border-color:#777;
+}
+
+.item-amount-box{
+    height:38px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    padding:0 8px;
+    font-size:13px;
+    font-weight:700;
+    background:#f8f8f8;
+    white-space:nowrap;
+    overflow:hidden;
+}
+
+.delete-item{
+    width:38px;
+    height:38px;
+    border:1px solid #ddd;
+    background:#fff;
+    border-radius:6px;
+    color:#b00020;
+    font-size:18px;
+}
+
+.item-details{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px dashed #ddd;
+}
+
+.item-detail-title{
+    font-size:11px;
+    color:#666;
+    margin-bottom:5px;
+}
+
+.item-detail-row{
+    display:grid;
+    grid-template-columns:90px 1fr;
+    gap:6px;
+}
+
+.add-item{
+    margin-top:11px;
+}
+
+/* =========================
+   TOTAL BOX
+========================= */
+
+.calculation-box{
+    margin-top:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    overflow:hidden;
+}
+
+.calc-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:9px 11px;
+    border-bottom:1px solid #eee;
+    font-size:13px;
+}
+
+.calc-row:last-child{
+    border-bottom:0;
+}
+
+.calc-total{
+    font-size:16px;
+    font-weight:700;
+    background:#f6f6f6;
+}
+
+/* =========================
+   SIGNATURE
+========================= */
+
+.signature-options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.signature-card{
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:11px;
+}
+
+.signature-card-title{
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:8px;
+}
+
+.signature-preview{
+    height:72px;
+    border:1px dashed #ccc;
+    border-radius:5px;
+    background:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    margin-bottom:8px;
+}
+
+.signature-preview img{
+    max-width:90%;
+    max-height:62px;
+    object-fit:contain;
+}
+
+.signature-preview span{
+    color:#aaa;
+    font-size:12px;
+}
+
+/* =========================
+   NOTE
+========================= */
+
+.settings-note{
+    background:#f6f6f6;
+    border-radius:7px;
+    padding:9px 10px;
+    font-size:12px;
+    color:#666;
+    margin-top:9px;
+}
+
+/* =========================
+   PREVIEW
+========================= */
+
+.preview-panel{
+    position:sticky;
+    top:82px;
+    min-width:0;
+}
+
+.preview-container{
+    background:#dfe3e7;
+    border:1px solid #d4d4d4;
+    border-radius:12px;
+    padding:18px;
+    overflow:auto;
+    min-height:600px;
+}
+
+.preview-heading{
+    color:#555;
+    font-size:13px;
+    margin-bottom:12px;
+    text-align:center;
+}
+
+.preview-stage{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    overflow:visible;
+}
+
+.receipt-scale-wrapper{
+    transform-origin:top center;
+}
+
+/* =========================
+   RECEIPT
+========================= */
+
+.receipt{
+    width:148mm;
+    min-height:210mm;
+    background:#fff;
+    padding:12mm;
+    color:#111;
+    font-family:Arial,Helvetica,sans-serif;
+    box-shadow:0 2px 15px rgba(0,0,0,.13);
+    flex-shrink:0;
+}
+
+.receipt.a4{
+    width:210mm;
+    min-height:297mm;
+}
+
+.receipt.thermal-80{
+    width:80mm;
+    min-height:auto;
+    padding:5mm;
+}
+
+.receipt.thermal-58{
+    width:58mm;
+    min-height:auto;
+    padding:4mm;
+}
+
+.receipt-header{
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.logo{
+    max-width:42mm;
+    max-height:25mm;
+    object-fit:contain;
+    margin-bottom:6px;
+}
+
+.shop-name{
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:4px;
+}
+
+.shop-address,
+.shop-contact,
+.shop-extra{
+    font-size:11px;
+    line-height:1.45;
+}
+
+.receipt-title{
+    margin-top:9px;
+    padding-top:8px;
+    border-top:1px solid #222;
+    border-bottom:1px solid #222;
+    padding-bottom:8px;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.5px;
+}
+
+.meta{
+    margin:10px 0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:3px 15px;
+    font-size:11px;
+}
+
+.meta-row{
+    display:flex;
+    gap:5px;
+}
+
+.meta-label{
+    font-weight:700;
+}
+
+.customer-box{
+    border-top:1px dashed #777;
+    border-bottom:1px dashed #777;
+    padding:7px 0;
+    margin-bottom:10px;
+    font-size:11px;
+}
+
+.customer-row{
+    display:flex;
+    gap:5px;
+    margin-bottom:3px;
+}
+
+.customer-row:last-child{
+    margin-bottom:0;
+}
+
+.customer-label{
+    font-weight:700;
+}
+
+.receipt-items{
+    width:100%;
+    border-collapse:collapse;
+    font-size:10px;
+}
+
+.receipt-items th{
+    padding:6px 3px;
+    border-top:1px solid #222;
+    border-bottom:1px solid #222;
+    text-align:left;
+}
+
+.receipt-items td{
+    padding:6px 3px;
+    border-bottom:1px solid #ddd;
+    vertical-align:top;
+}
+
+.receipt-items .num{
+    text-align:right;
+}
+
+.item-subline{
+    color:#555;
+    font-size:8px;
+    margin-top:2px;
+}
+
+.summary{
+    margin-top:9px;
+    margin-left:auto;
+    width:65%;
+    font-size:11px;
+}
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:3px 0;
+}
+
+.summary-total{
+    margin-top:4px;
+    padding:7px 0;
+    border-top:1px solid #222;
+    border-bottom:1px double #222;
+    font-size:14px;
+    font-weight:700;
+}
+
+.payment{
+    margin-top:9px;
+    font-size:11px;
+}
+
+.amount-words{
+    margin-top:8px;
+    font-size:10px;
+    font-style:italic;
+}
+
+.notes{
+    margin-top:10px;
+    padding-top:7px;
+    border-top:1px dashed #777;
+    font-size:10px;
+    line-height:1.45;
+}
+
+.signatures{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin-top:28px;
+}
+
+.signature-area{
+    min-height:25mm;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+}
+
+.signature-image{
+    position:absolute;
+    left:50%;
+    bottom:7mm;
+    transform:translateX(-50%);
+    width:30mm;
+    height:15mm;
+    object-fit:contain;
+}
+
+.signature-line{
+    border-top:1px solid #222;
+    padding-top:4px;
+    text-align:center;
+    font-size:9px;
+}
+
+.receipt-footer{
+    text-align:center;
+    margin-top:15px;
+    font-size:9px;
+    color:#555;
+}
+
+.receipt.thermal-80 .shop-name{
+    font-size:16px;
+}
+
+.receipt.thermal-58 .shop-name{
+    font-size:14px;
+}
+
+.receipt.thermal-80 .receipt-title,
+.receipt.thermal-58 .receipt-title{
+    font-size:12px;
+}
+
+.receipt.thermal-80 .meta,
+.receipt.thermal-58 .meta{
+    grid-template-columns:1fr;
+}
+
+.receipt.thermal-80 .receipt-items,
+.receipt.thermal-58 .receipt-items{
+    font-size:8px;
+}
+
+.receipt.thermal-58 .summary{
+    width:100%;
+}
+
+.receipt.thermal-80 .summary{
+    width:75%;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status{
+    position:fixed;
+    left:50%;
+    bottom:20px;
+    transform:translateX(-50%);
+    background:#111;
+    color:#fff;
+    padding:10px 16px;
+    border-radius:8px;
+    font-size:13px;
+    display:none;
+    z-index:999;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media(max-width:1100px){
+
+    .layout{
+        grid-template-columns:1fr;
+    }
+
+    .preview-panel{
+        position:static;
+    }
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+    .topbar{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .top-actions{
+        width:100%;
+    }
+
+    .top-actions .btn{
+        flex:1;
+    }
+
+    .main{
+        padding:8px;
+    }
+
+    .grid,
+    .grid-3{
+        grid-template-columns:1fr;
+    }
+
+    .field.full{
+        grid-column:auto;
+    }
+
+    .signature-options{
+        grid-template-columns:1fr;
+    }
+
+    .item-top{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .item-top .item-name-field{
+        grid-column:1/-1;
+    }
+
+    .item-amount-field{
+        grid-column:1/2;
+    }
+
+    .item-delete-field{
+        grid-column:2/3;
+        display:flex;
+        justify-content:flex-end;
+    }
+
+    .item-details{
+        grid-template-columns:1fr;
+    }
+
+    .preview-container{
+        padding:12px 4px 30px;
+        overflow:hidden;
+    }
+
+    .preview-stage{
+        justify-content:flex-start;
+    }
+
+}
+
+/* =========================
+   PRINT
+========================= */
+
+@media print{
+
+    body{
+        background:#fff;
+    }
+
+    .topbar,
+    .form-panel,
+    .preview-heading,
+    .status{
+        display:none!important;
+    }
+
+    .main{
+        padding:0;
+        margin:0;
+    }
+
+    .layout{
+        display:block;
+    }
+
+    .preview-container{
+        border:0;
+        padding:0;
+        background:#fff;
+        overflow:visible;
+    }
+
+    .preview-stage{
+        display:block;
+    }
+
+    .receipt-scale-wrapper{
+        transform:none!important;
+    }
+
+    .receipt{
+        box-shadow:none;
+        margin:0 auto!important;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="title">
+        Receipt & Bill Generator
+    </div>
+
+    <div class="top-actions">
+
+        <button class="btn" id="resetBtn">
+            Reset
+        </button>
+
+        <button class="btn" id="printBtn">
+            Print
+        </button>
+
+        <button class="btn btn-primary" id="downloadBtn">
+            Download PDF
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="main">
+
+<div class="layout">
+
+<!-- =====================================================
+     FORM
+===================================================== -->
+
+<section class="form-panel">
+
+<div class="form-header">
+
+    <h2>Create Document</h2>
+
+    <p>
+        Create a professional purchase or sales bill.
+    </p>
+
+</div>
+
+
+<!-- DOCUMENT TYPE -->
+
+<div class="section">
+
+<div class="section-title">
+    Document Type
+</div>
+
+<div class="type-switch">
+
+<label id="purchaseLabel" class="active">
+
+    <input
+        type="radio"
+        name="documentType"
+        value="purchase"
+        checked>
+
+    Purchase
+
+</label>
+
+<label id="salesLabel">
+
+    <input
+        type="radio"
+        name="documentType"
+        value="sales">
+
+    Sales
+
+</label>
+
+</div>
+
+</div>
+
+
+<!-- SHOP -->
+
+<div class="section">
+
+<div class="section-title">
+    Business / Seller Details
+</div>
+
+<div class="grid">
+
+    <div class="field">
+
+        <label>
+            Business / Shop Name *
+        </label>
+
+        <input
+            id="shopName"
+            type="text"
+            placeholder="ABC Traders">
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            Mobile Number
+        </label>
+
+        <input
+            id="shopPhone"
+            type="tel"
+            placeholder="9876543210">
+
+    </div>
+
+    <div class="field full">
+
+        <label>
+            Address
+        </label>
+
+        <textarea
+            id="shopAddress"
+            placeholder="Business address"></textarea>
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            Email
+        </label>
+
+        <input
+            id="shopEmail"
+            type="email"
+            placeholder="example@email.com">
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            GSTIN
+        </label>
+
+        <input
+            id="gstin"
+            type="text"
+            placeholder="Optional">
+
+    </div>
+
+    <div class="field full">
+
+        <label>
+            Business Logo
+        </label>
+
+        <div class="upload-box">
+
+            <div class="upload-row">
+
+                <div
+                    class="upload-preview"
+                    id="logoPreview">
+
+                    <span style="font-size:11px;color:#aaa;">
+                        No logo
+                    </span>
+
+                </div>
+
+                <div class="upload-info">
+
+                    <strong>
+                        Upload Logo
+                    </strong>
+
+                    <small>
+                        JPG or PNG. Optional.
+                    </small>
+
+                    <br><br>
+
+                    <input
+                        id="logoInput"
+                        type="file"
+                        accept="image/png,image/jpeg">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- DOCUMENT -->
+
+<div class="section">
+
+<div class="section-title">
+    Bill / Receipt Information
+</div>
+
+<div class="grid-3">
+
+    <div class="field">
+
+        <label>
+            Number
+        </label>
+
+        <input
+            id="receiptNumber"
+            type="text">
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            Date
+        </label>
+
+        <input
+            id="receiptDate"
+            type="date">
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            Time
+        </label>
+
+        <input
+            id="receiptTime"
+            type="time">
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            Paper Size
+        </label>
+
+        <select id="receiptSize">
+
+            <option value="A5">
+                A5
+            </option>
+
+            <option value="A4">
+                A4
+            </option>
+
+            <option value="80mm">
+                Thermal 80mm
+            </option>
+
+            <option value="58mm">
+                Thermal 58mm
+            </option>
+
+        </select>
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            Currency
+        </label>
+
+        <select id="currency">
+
+            <option value="₹">
+                ₹ Indian Rupee
+            </option>
+
+            <option value="$">
+                $ US Dollar
+            </option>
+
+            <option value="€">
+                € Euro
+            </option>
+
+            <option value="£">
+                £ Pound
+            </option>
+
+        </select>
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            Payment Mode
+        </label>
+
+        <select id="paymentMode">
+
+            <option>
+                Cash
+            </option>
+
+            <option>
+                UPI
+            </option>
+
+            <option>
+                Card
+            </option>
+
+            <option>
+                Bank Transfer
+            </option>
+
+            <option>
+                Other
+            </option>
+
+        </select>
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            Transaction / UPI Reference
+        </label>
+
+        <input
+            id="transactionRef"
+            type="text"
+            placeholder="Optional">
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- PARTY -->
+
+<div class="section">
+
+<div class="section-title">
+    Party Details
+</div>
+
+<div class="grid">
+
+    <div class="field">
+
+        <label id="partyNameLabel">
+            Supplier / Party Name
+        </label>
+
+        <input
+            id="partyName"
+            type="text"
+            placeholder="Party name">
+
+    </div>
+
+    <div class="field">
+
+        <label>
+            Party Mobile
+        </label>
+
+        <input
+            id="partyPhone"
+            type="tel"
+            placeholder="Optional">
+
+    </div>
+
+    <div class="field full">
+
+        <label>
+            Party Address
+        </label>
+
+        <textarea
+            id="partyAddress"
+            placeholder="Optional"></textarea>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- ITEMS -->
+
+<div class="section">
+
+<div class="section-title">
+    Items
+</div>
+
+<div id="itemsList" class="items-list">
+</div>
+
+<button
+    class="btn add-item"
+    id="addItemBtn"
+    type="button">
+
+    + Add Item
+
+</button>
+
+<div class="settings-note">
+
+    Each item can have its own discount and GST.
+    The amount is calculated automatically.
+
+</div>
+
+</div>
+
+
+<!-- NOTES -->
+
+<div class="section">
+
+<div class="section-title">
+    Additional Information
+</div>
+
+<div class="field">
+
+<textarea
+    id="notes"
+    placeholder="Notes, terms, thank you message..."></textarea>
+
+</div>
+
+</div>
+
+
+<!-- SIGNATURE -->
+
+<div class="section">
+
+<div class="section-title">
+    Optional Signatures
+</div>
+
+<div class="signature-options">
+
+
+<div class="signature-card">
+
+    <div class="signature-card-title">
+        Customer / Buyer Signature
+    </div>
+
+    <div
+        class="signature-preview"
+        id="customerSignaturePreview">
+
+        <span>
+            No signature
+        </span>
+
+    </div>
+
+    <input
+        id="customerSignatureInput"
+        type="file"
+        accept="image/png,image/jpeg">
+
+</div>
+
+
+<div class="signature-card">
+
+    <div class="signature-card-title">
+        Seller / Authorized Signature
+    </div>
+
+    <div
+        class="signature-preview"
+        id="sellerSignaturePreview">
+
+        <span>
+            No signature
+        </span>
+
+    </div>
+
+    <input
+        id="sellerSignatureInput"
+        type="file"
+        accept="image/png,image/jpeg">
+
+</div>
+
+
+</div>
+
+<div class="settings-note">
+
+    Signatures are optional. If you don't upload one,
+    the same space remains available for a handwritten signature.
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     PREVIEW
+===================================================== -->
+
+<section class="preview-panel">
+
+<div class="preview-container">
+
+<div class="preview-heading">
+    Receipt / Bill Preview
+</div>
+
+<div class="preview-stage">
+
+<div class="receipt-scale-wrapper" id="receiptWrapper">
+
+<div class="receipt" id="receipt">
+
+
+<div class="receipt-header">
+
+<img
+    id="receiptLogo"
+    class="logo"
+    style="display:none;">
+
+<div
+    class="shop-name"
+    id="previewShopName">
+
+    Business / Shop Name
+
+</div>
+
+<div
+    class="shop-address"
+    id="previewShopAddress">
+</div>
+
+<div
+    class="shop-contact"
+    id="previewShopContact">
+</div>
+
+<div
+    class="shop-extra"
+    id="previewShopExtra">
+</div>
+
+<div
+    class="receipt-title"
+    id="previewTitle">
+
+    PURCHASE BILL
+
+</div>
+
+</div>
+
+
+<div class="meta">
+
+<div class="meta-row">
+
+<span class="meta-label">
+    No:
+</span>
+
+<span id="previewReceiptNumber">
+    —
+</span>
+
+</div>
+
+<div class="meta-row">
+
+<span class="meta-label">
+    Date:
+</span>
+
+<span id="previewDate">
+    —
+</span>
+
+</div>
+
+<div class="meta-row">
+
+<span class="meta-label">
+    Time:
+</span>
+
+<span id="previewTime">
+    —
+</span>
+
+</div>
+
+<div class="meta-row">
+
+<span class="meta-label">
+    Payment:
+</span>
+
+<span id="previewPayment">
+    Cash
+</span>
+
+</div>
+
+</div>
+
+
+<div class="customer-box">
+
+<div
+    class="customer-row"
+    id="previewPartyNameRow">
+
+<span
+    class="customer-label"
+    id="previewPartyLabel">
+
+    Purchase From:
+
+</span>
+
+<span id="previewPartyName">
+</span>
+
+</div>
+
+<div
+    class="customer-row"
+    id="previewPartyPhoneRow">
+
+<span class="customer-label">
+    Mobile:
+</span>
+
+<span id="previewPartyPhone">
+</span>
+
+</div>
+
+<div
+    class="customer-row"
+    id="previewPartyAddressRow">
+
+<span class="customer-label">
+    Address:
+</span>
+
+<span id="previewPartyAddress">
+</span>
+
+</div>
+
+</div>
+
+
+<table class="receipt-items">
+
+<thead>
+
+<tr>
+
+<th>
+    Item
+</th>
+
+<th class="num">
+    Qty
+</th>
+
+<th class="num">
+    Rate
+</th>
+
+<th class="num">
+    Amount
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="previewItems">
+</tbody>
+
+</table>
+
+
+<div class="summary">
+
+<div class="summary-row">
+
+<span>
+    Gross Amount
+</span>
+
+<strong id="previewGross">
+    ₹0.00
+</strong>
+
+</div>
+
+<div class="summary-row">
+
+<span>
+    Item Discounts
+</span>
+
+<strong id="previewDiscount">
+    ₹0.00
+</strong>
+
+</div>
+
+<div
+    class="summary-row"
+    id="previewIGSTRow"
+    style="display:none;">
+
+<span>
+    IGST
+</span>
+
+<strong id="previewIGST">
+    ₹0.00
+</strong>
+
+</div>
+
+<div
+    class="summary-row"
+    id="previewCGSTRow"
+    style="display:none;">
+
+<span>
+    CGST
+</span>
+
+<strong id="previewCGST">
+    ₹0.00
+</strong>
+
+</div>
+
+<div
+    class="summary-row"
+    id="previewSGSTRow"
+    style="display:none;">
+
+<span>
+    SGST
+</span>
+
+<strong id="previewSGST">
+    ₹0.00
+</strong>
+
+</div>
+
+<div class="summary-row summary-total">
+
+<span>
+    TOTAL
+</span>
+
+<strong id="previewTotal">
+    ₹0.00
+</strong>
+
+</div>
+
+</div>
+
+
+<div class="payment">
+
+<strong>
+    Payment Mode:
+</strong>
+
+<span id="previewPaymentMode">
+    Cash
+</span>
+
+<span
+    id="previewTransaction"
+    style="display:none;">
+</span>
+
+</div>
+
+
+<div
+    class="amount-words"
+    id="previewAmountWords">
+</div>
+
+
+<div
+    class="notes"
+    id="previewNotes"
+    style="display:none;">
+</div>
+
+
+<div class="signatures">
+
+<div class="signature-area">
+
+<img
+    id="previewCustomerSignature"
+    class="signature-image"
+    style="display:none;">
+
+<div class="signature-line">
+    Customer / Buyer Signature
+</div>
+
+</div>
+
+
+<div class="signature-area">
+
+<img
+    id="previewSellerSignature"
+    class="signature-image"
+    style="display:none;">
+
+<div class="signature-line">
+    Seller / Authorized Signature
+</div>
+
+</div>
+
+</div>
+
+
+<div class="receipt-footer">
+    Thank you
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+</main>
+
+
+<div
+    class="status"
+    id="status">
+</div>
+
+
+<script>
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let documentType = "purchase";
+
+let items = [];
+
+let logoData = "";
+
+let customerSignatureData = "";
+
+let sellerSignatureData = "";
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+const $ = id =>
+    document.getElementById(id);
+
+
+function todayDate(){
+
+    const d = new Date();
+
+    return [
+        d.getFullYear(),
+        String(d.getMonth()+1).padStart(2,"0"),
+        String(d.getDate()).padStart(2,"0")
+    ].join("-");
+
+}
+
+
+function currentTime(){
+
+    const d = new Date();
+
+    return (
+        String(d.getHours()).padStart(2,"0")
+        + ":" +
+        String(d.getMinutes()).padStart(2,"0")
+    );
+
+}
+
+
+function generateNumber(){
+
+    return String(Date.now()).slice(-6);
+
+}
+
+
+function currency(){
+
+    return $("currency").value;
+
+}
+
+
+function money(value){
+
+    return currency() +
+        Number(value || 0).toLocaleString(
+            "en-IN",
+            {
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            }
+        );
+
+}
+
+
+function escapeHTML(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function formatDate(value){
+
+    if(!value) return "—";
+
+    const p = value.split("-");
+
+    if(p.length !== 3)
+        return value;
+
+    return `${p[2]}/${p[1]}/${p[0]}`;
+
+}
+
+
+function quantity(value){
+
+    const n = Number(value) || 0;
+
+    if(Number.isInteger(n))
+        return String(n);
+
+    return n.toFixed(2)
+        .replace(/0+$/,"")
+        .replace(/\.$/,"");
+
+}
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+function init(){
+
+    $("receiptDate").value = todayDate();
+
+    $("receiptTime").value = currentTime();
+
+    $("receiptNumber").value = generateNumber();
+
+    addItem();
+
+    loadData();
+
+    updateTypeUI();
+
+    updateReceipt();
+
+    resizePreview();
+
+}
+
+
+/* =====================================================
+   DOCUMENT TYPE
+===================================================== */
+
+document
+.querySelectorAll(
+    'input[name="documentType"]'
+)
+.forEach(radio => {
+
+    radio.addEventListener(
+        "change",
+        () => {
+
+            documentType =
+                radio.value;
+
+            updateTypeUI();
+
+            updateReceipt();
+
+        }
+    );
+
+});
+
+
+function updateTypeUI(){
+
+    $("purchaseLabel")
+        .classList.toggle(
+            "active",
+            documentType === "purchase"
+        );
+
+    $("salesLabel")
+        .classList.toggle(
+            "active",
+            documentType === "sales"
+        );
+
+    if(documentType === "purchase"){
+
+        $("partyNameLabel").textContent =
+            "Purchase From";
+
+        $("partyName").placeholder =
+            "Supplier / seller name";
+
+        $("previewPartyLabel").textContent =
+            "Purchase From:";
+
+        $("previewTitle").textContent =
+            "PURCHASE BILL";
+
+    }else{
+
+        $("partyNameLabel").textContent =
+            "Sales To";
+
+        $("partyName").placeholder =
+            "Customer / buyer name";
+
+        $("previewPartyLabel").textContent =
+            "Sales To:";
+
+        $("previewTitle").textContent =
+            "SALES BILL";
+
+    }
+
+}
+
+
+/* =====================================================
+   ADD ITEM
+===================================================== */
+
+function addItem(){
+
+    items.push({
+
+        id:Date.now() + Math.random(),
+
+        name:"",
+
+        qty:1,
+
+        rate:0,
+
+        discountType:"percent",
+
+        discountValue:0,
+
+        gstType:"none",
+
+        gstRate:0
+
+    });
+
+    renderItems();
+
+    updateReceipt();
+
+}
+
+
+/* =====================================================
+   RENDER ITEM EDITORS
+===================================================== */
+
+function renderItems(){
+
+    const list =
+        $("itemsList");
+
+    list.innerHTML = "";
+
+    items.forEach(
+        (item,index) => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "item-card";
+
+        card.dataset.index =
+            index;
+
+        card.innerHTML = `
+
+<div class="item-top">
+
+<div class="item-field item-name-field">
+
+<label>
+    Item / Product
+</label>
+
+<input
+    type="text"
+    class="item-name"
+    value="${escapeHTML(item.name)}"
+    placeholder="Product name">
+
+</div>
+
+
+<div class="item-field">
+
+<label>
+    Qty
+</label>
+
+<input
+    type="number"
+    class="item-qty"
+    min="0"
+    step="0.01"
+    value="${item.qty}">
+
+</div>
+
+
+<div class="item-field">
+
+<label>
+    Rate
+</label>
+
+<input
+    type="number"
+    class="item-rate"
+    min="0"
+    step="0.01"
+    value="${item.rate}">
+
+</div>
+
+
+<div class="item-field item-amount-field">
+
+<label>
+    Amount
+</label>
+
+<div class="item-amount-box">
+    ${money(
+        Number(item.qty || 0) *
+        Number(item.rate || 0)
+    )}
+</div>
+
+</div>
+
+
+<div class="item-field item-delete-field">
+
+<label>
+    &nbsp;
+</label>
+
+<button
+    type="button"
+    class="delete-item">
+    ×
+</button>
+
+</div>
+
+</div>
+
+
+<div class="item-details">
+
+<div>
+
+<div class="item-detail-title">
+    Item Discount
+</div>
+
+<div class="item-detail-row">
+
+<select class="item-discount-type">
+
+<option
+    value="percent"
+    ${item.discountType === "percent" ? "selected":""}>
+    %
+</option>
+
+<option
+    value="amount"
+    ${item.discountType === "amount" ? "selected":""}>
+    ₹
+</option>
+
+</select>
+
+<input
+    type="number"
+    class="item-discount-value"
+    min="0"
+    step="0.01"
+    value="${item.discountValue}"
+    placeholder="Discount">
+
+</div>
+
+</div>
+
+
+<div>
+
+<div class="item-detail-title">
+    Item GST
+</div>
+
+<div class="item-detail-row">
+
+<select class="item-gst-type">
+
+<option
+    value="none"
+    ${item.gstType === "none" ? "selected":""}>
+    No GST
+</option>
+
+<option
+    value="igst"
+    ${item.gstType === "igst" ? "selected":""}>
+    IGST
+</option>
+
+<option
+    value="cgst_sgst"
+    ${item.gstType === "cgst_sgst" ? "selected":""}>
+    CGST + SGST
+</option>
+
+</select>
+
+<input
+    type="number"
+    class="item-gst-rate"
+    min="0"
+    max="100"
+    step="0.01"
+    value="${item.gstRate}"
+    placeholder="GST %">
+
+</div>
+
+</div>
+
+</div>
+
+        `;
+
+
+        /* -----------------------------
+           INPUT EVENTS
+        ----------------------------- */
+
+        const name =
+            card.querySelector(
+                ".item-name"
+            );
+
+        const qty =
+            card.querySelector(
+                ".item-qty"
+            );
+
+        const rate =
+            card.querySelector(
+                ".item-rate"
+            );
+
+        const discountType =
+            card.querySelector(
+                ".item-discount-type"
+            );
+
+        const discountValue =
+            card.querySelector(
+                ".item-discount-value"
+            );
+
+        const gstType =
+            card.querySelector(
+                ".item-gst-type"
+            );
+
+        const gstRate =
+            card.querySelector(
+                ".item-gst-rate"
+            );
+
+
+        name.addEventListener(
+            "input",
+            () => {
+
+                item.name =
+                    name.value;
+
+                updateItemAmount(
+                    card,
+                    item
+                );
+
+                updateReceipt();
+
+            }
+        );
+
+
+        qty.addEventListener(
+            "input",
+            () => {
+
+                /*
+                 * IMPORTANT:
+                 * Do NOT re-render item.
+                 * This keeps keyboard focus.
+                 */
+
+                item.qty =
+                    Number(qty.value) || 0;
+
+                updateItemAmount(
+                    card,
+                    item
+                );
+
+                updateReceipt();
+
+            }
+        );
+
+
+        rate.addEventListener(
+            "input",
+            () => {
+
+                /*
+                 * IMPORTANT:
+                 * No renderItems() here.
+                 * User can type 2500 directly.
+                 */
+
+                item.rate =
+                    Number(rate.value) || 0;
+
+                updateItemAmount(
+                    card,
+                    item
+                );
+
+                updateReceipt();
+
+            }
+        );
+
+
+        discountType.addEventListener(
+            "change",
+            () => {
+
+                item.discountType =
+                    discountType.value;
+
+                updateItemAmount(
+                    card,
+                    item
+                );
+
+                updateReceipt();
+
+            }
+        );
+
+
+        discountValue.addEventListener(
+            "input",
+            () => {
+
+                item.discountValue =
+                    Number(
+                        discountValue.value
+                    ) || 0;
+
+                updateItemAmount(
+                    card,
+                    item
+                );
+
+                updateReceipt();
+
+            }
+        );
+
+
+        gstType.addEventListener(
+            "change",
+            () => {
+
+                item.gstType =
+                    gstType.value;
+
+                updateItemAmount(
+                    card,
+                    item
+                );
+
+                updateReceipt();
+
+            }
+        );
+
+
+        gstRate.addEventListener(
+            "input",
+            () => {
+
+                item.gstRate =
+                    Number(
+                        gstRate.value
+                    ) || 0;
+
+                updateItemAmount(
+                    card,
+                    item
+                );
+
+                updateReceipt();
+
+            }
+        );
+
+
+        card.querySelector(
+            ".delete-item"
+        ).addEventListener(
+            "click",
+            () => {
+
+                if(items.length === 1){
+
+                    items[0] = {
+
+                        id:Date.now(),
+
+                        name:"",
+
+                        qty:1,
+
+                        rate:0,
+
+                        discountType:"percent",
+
+                        discountValue:0,
+
+                        gstType:"none",
+
+                        gstRate:0
+
+                    };
+
+                }else{
+
+                    items.splice(
+                        index,
+                        1
+                    );
+
+                }
+
+                renderItems();
+
+                updateReceipt();
+
+            }
+        );
+
+
+        list.appendChild(card);
+
+    });
+
+}
+
+
+function updateItemAmount(
+    card,
+    item
+){
+
+    const gross =
+        (Number(item.qty)||0) *
+        (Number(item.rate)||0);
+
+    const discount =
+        calculateItemDiscount(
+            item,
+            gross
+        );
+
+    const taxable =
+        Math.max(
+            0,
+            gross - discount
+        );
+
+    const gst =
+        calculateItemGST(
+            item,
+            taxable
+        );
+
+    card.querySelector(
+        ".item-amount-box"
+    ).textContent =
+        money(
+            taxable + gst.total
+        );
+
+}
+
+
+/* =====================================================
+   ITEM CALCULATIONS
+===================================================== */
+
+function calculateItemDiscount(
+    item,
+    gross
+){
+
+    const value =
+        Math.max(
+            0,
+            Number(item.discountValue)||0
+        );
+
+    if(
+        item.discountType === "amount"
+    ){
+
+        return Math.min(
+            value,
+            gross
+        );
+
+    }
+
+    return Math.min(
+        gross,
+        gross * value / 100
+    );
+
+}
+
+
+function calculateItemGST(
+    item,
+    taxable
+){
+
+    const rate =
+        Math.max(
+            0,
+            Number(item.gstRate)||0
+        );
+
+    if(
+        item.gstType === "igst"
+    ){
+
+        return {
+
+            igst:
+                taxable * rate / 100,
+
+            cgst:0,
+
+            sgst:0,
+
+            total:
+                taxable * rate / 100
+
+        };
+
+    }
+
+
+    if(
+        item.gstType === "cgst_sgst"
+    ){
+
+        const total =
+            taxable * rate / 100;
+
+        return {
+
+            igst:0,
+
+            cgst:total/2,
+
+            sgst:total/2,
+
+            total
+
+        };
+
+    }
+
+
+    return {
+
+        igst:0,
+
+        cgst:0,
+
+        sgst:0,
+
+        total:0
+
+    };
+
+}
+
+
+/* =====================================================
+   ALL TOTALS
+===================================================== */
+
+function calculateTotals(){
+
+    let gross = 0;
+
+    let discounts = 0;
+
+    let igst = 0;
+
+    let cgst = 0;
+
+    let sgst = 0;
+
+
+    items.forEach(item => {
+
+        const itemGross =
+            (Number(item.qty)||0) *
+            (Number(item.rate)||0);
+
+        const discount =
+            calculateItemDiscount(
+                item,
+                itemGross
+            );
+
+        const taxable =
+            Math.max(
+                0,
+                itemGross - discount
+            );
+
+        const gst =
+            calculateItemGST(
+                item,
+                taxable
+            );
+
+        gross += itemGross;
+
+        discounts += discount;
+
+        igst += gst.igst;
+
+        cgst += gst.cgst;
+
+        sgst += gst.sgst;
+
+    });
+
+
+    return {
+
+        gross,
+
+        discounts,
+
+        taxable:
+            Math.max(
+                0,
+                gross - discounts
+            ),
+
+        igst,
+
+        cgst,
+
+        sgst,
+
+        total:
+            Math.max(
+                0,
+                gross - discounts
+            )
+            +
+            igst +
+            cgst +
+            sgst
+
+    };
+
+}
+
+
+/* =====================================================
+   UPDATE RECEIPT
+===================================================== */
+
+function updateReceipt(){
+
+    updateBasicDetails();
+
+    updateItemsPreview();
+
+    updateSummary();
+
+    updateLogo();
+
+    updateSignatures();
+
+    updateReceiptSize();
+
+    saveData();
+
+    requestAnimationFrame(
+        resizePreview
+    );
+
+}
+
+
+/* =====================================================
+   BASIC DETAILS
+===================================================== */
+
+function updateBasicDetails(){
+
+    $("previewShopName").textContent =
+        $("shopName").value ||
+        "Business / Shop Name";
+
+
+    $("previewShopAddress").textContent =
+        $("shopAddress").value;
+
+
+    const phone =
+        $("shopPhone").value.trim();
+
+    const email =
+        $("shopEmail").value.trim();
+
+    $("previewShopContact").textContent =
+        [phone,email]
+        .filter(Boolean)
+        .join(" • ");
+
+
+    const gstin =
+        $("gstin").value.trim();
+
+    $("previewShopExtra").textContent =
+        gstin
+        ? "GSTIN: " + gstin
+        : "";
+
+
+    $("previewReceiptNumber").textContent =
+        $("receiptNumber").value || "—";
+
+
+    $("previewDate").textContent =
+        formatDate(
+            $("receiptDate").value
+        );
+
+
+    $("previewTime").textContent =
+        $("receiptTime").value || "—";
+
+
+    $("previewPayment").textContent =
+        $("paymentMode").value;
+
+
+    const party =
+        $("partyName").value.trim();
+
+    const partyPhone =
+        $("partyPhone").value.trim();
+
+    const partyAddress =
+        $("partyAddress").value.trim();
+
+
+    setRow(
+        "previewPartyNameRow",
+        party,
+        "previewPartyName"
+    );
+
+    setRow(
+        "previewPartyPhoneRow",
+        partyPhone,
+        "previewPartyPhone"
+    );
+
+    setRow(
+        "previewPartyAddressRow",
+        partyAddress,
+        "previewPartyAddress"
+    );
+
+
+    $("previewPartyLabel").textContent =
+        documentType === "purchase"
+        ? "Purchase From:"
+        : "Sales To:";
+
+
+    $("previewPaymentMode").textContent =
+        $("paymentMode").value;
+
+
+    const ref =
+        $("transactionRef").value.trim();
+
+    if(ref){
+
+        $("previewTransaction").style.display =
+            "inline";
+
+        $("previewTransaction").textContent =
+            " • Ref: " + ref;
+
+    }else{
+
+        $("previewTransaction").style.display =
+            "none";
+
+    }
+
+
+    const notes =
+        $("notes").value.trim();
+
+    if(notes){
+
+        $("previewNotes").style.display =
+            "block";
+
+        $("previewNotes").textContent =
+            notes;
+
+    }else{
+
+        $("previewNotes").style.display =
+            "none";
+
+    }
+
+}
+
+
+function setRow(
+    rowId,
+    value,
+    targetId
+){
+
+    const row =
+        $(rowId);
+
+    if(value){
+
+        row.style.display =
+            "flex";
+
+        $(targetId).textContent =
+            value;
+
+    }else{
+
+        row.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =====================================================
+   PREVIEW ITEMS
+===================================================== */
+
+function updateItemsPreview(){
+
+    const body =
+        $("previewItems");
+
+    body.innerHTML = "";
+
+
+    items.forEach(item => {
+
+        const gross =
+            (Number(item.qty)||0) *
+            (Number(item.rate)||0);
+
+        const discount =
+            calculateItemDiscount(
+                item,
+                gross
+            );
+
+        const taxable =
+            Math.max(
+                0,
+                gross - discount
+            );
+
+        const gst =
+            calculateItemGST(
+                item,
+                taxable
+            );
+
+        if(
+            !item.name.trim() &&
+            gross === 0
+        ) return;
+
+
+        let taxText = "";
+
+        if(
+            item.gstType === "igst" &&
+            item.gstRate > 0
+        ){
+
+            taxText =
+                `IGST ${item.gstRate}%`;
+
+        }
+
+        if(
+            item.gstType === "cgst_sgst" &&
+            item.gstRate > 0
+        ){
+
+            const half =
+                Number(item.gstRate)/2;
+
+            taxText =
+                `CGST ${half}% + SGST ${half}%`;
+
+        }
+
+
+        const discountText =
+            discount > 0
+            ? `Discount ${money(discount)}`
+            : "";
+
+
+        const details =
+            [discountText,taxText]
+            .filter(Boolean)
+            .join(" • ");
+
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+<td>
+
+    <div>
+        ${escapeHTML(
+            item.name || "Item"
+        )}
+    </div>
+
+    ${
+        details
+        ? `
+        <div class="item-subline">
+            ${escapeHTML(details)}
+        </div>
+        `
+        : ""
+    }
+
+</td>
+
+<td class="num">
+    ${quantity(item.qty)}
+</td>
+
+<td class="num">
+    ${money(item.rate)}
+</td>
+
+<td class="num">
+    <strong>
+        ${money(
+            taxable + gst.total
+        )}
+    </strong>
+</td>
+
+        `;
+
+
+        body.appendChild(row);
+
+    });
+
+
+    if(!body.children.length){
+
+        const row =
+            document.createElement("tr");
+
+        row.innerHTML = `
+
+<td
+    colspan="4"
+    style="text-align:center;color:#888;">
+
+    No items added
+
+</td>
+
+        `;
+
+        body.appendChild(row);
+
+    }
+
+}
+
+
+/* =====================================================
+   SUMMARY
+===================================================== */
+
+function updateSummary(){
+
+    const totals =
+        calculateTotals();
+
+
+    $("previewGross").textContent =
+        money(totals.gross);
+
+
+    $("previewDiscount").textContent =
+        money(totals.discounts);
+
+
+    $("previewIGST").textContent =
+        money(totals.igst);
+
+
+    $("previewCGST").textContent =
+        money(totals.cgst);
+
+
+    $("previewSGST").textContent =
+        money(totals.sgst);
+
+
+    $("previewTotal").textContent =
+        money(totals.total);
+
+
+    $("previewIGSTRow").style.display =
+        totals.igst > 0
+        ? "flex"
+        : "none";
+
+
+    $("previewCGSTRow").style.display =
+        totals.cgst > 0
+        ? "flex"
+        : "none";
+
+
+    $("previewSGSTRow").style.display =
+        totals.sgst > 0
+        ? "flex"
+        : "none";
+
+
+    $("previewAmountWords").textContent =
+        amountInWords(
+            totals.total
+        );
+
+}
+
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+function updateLogo(){
+
+    if(logoData){
+
+        $("receiptLogo").src =
+            logoData;
+
+        $("receiptLogo").style.display =
+            "inline-block";
+
+    }else{
+
+        $("receiptLogo").style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =====================================================
+   SIGNATURE
+===================================================== */
+
+function updateSignatures(){
+
+    if(customerSignatureData){
+
+        $("previewCustomerSignature").src =
+            customerSignatureData;
+
+        $("previewCustomerSignature").style.display =
+            "block";
+
+    }else{
+
+        $("previewCustomerSignature").style.display =
+            "none";
+
+    }
+
+
+    if(sellerSignatureData){
+
+        $("previewSellerSignature").src =
+            sellerSignatureData;
+
+        $("previewSellerSignature").style.display =
+            "block";
+
+    }else{
+
+        $("previewSellerSignature").style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =====================================================
+   RECEIPT SIZE
+===================================================== */
+
+function updateReceiptSize(){
+
+    const receipt =
+        $("receipt");
+
+    receipt.classList.remove(
+        "a4",
+        "thermal-80",
+        "thermal-58"
+    );
+
+
+    const size =
+        $("receiptSize").value;
+
+
+    if(size === "A4")
+        receipt.classList.add("a4");
+
+
+    if(size === "80mm")
+        receipt.classList.add("thermal-80");
+
+
+    if(size === "58mm")
+        receipt.classList.add("thermal-58");
+
+}
+
+
+/* =====================================================
+   RESPONSIVE PREVIEW
+===================================================== */
+
+function resizePreview(){
+
+    const container =
+        $("preview-container");
+
+    const stage =
+        document.querySelector(
+            ".preview-stage"
+        );
+
+    const wrapper =
+        $("receiptWrapper");
+
+    const receipt =
+        $("receipt");
+
+
+    if(!container ||
+       !stage ||
+       !wrapper ||
+       !receipt)
+        return;
+
+
+    wrapper.style.transform =
+        "none";
+
+
+    const receiptWidth =
+        receipt.offsetWidth;
+
+
+    const availableWidth =
+        stage.clientWidth;
+
+
+    if(
+        receiptWidth > availableWidth &&
+        availableWidth > 0
+    ){
+
+        const scale =
+            Math.max(
+                0.35,
+                availableWidth /
+                receiptWidth
+            );
+
+        wrapper.style.transform =
+            `scale(${scale})`;
+
+        wrapper.style.width =
+            `${receiptWidth * scale}px`;
+
+        wrapper.style.height =
+            `${receipt.offsetHeight * scale}px`;
+
+    }else{
+
+        wrapper.style.transform =
+            "none";
+
+        wrapper.style.width =
+            `${receiptWidth}px`;
+
+        wrapper.style.height =
+            `${receipt.offsetHeight}px`;
+
+    }
+
+}
+
+
+window.addEventListener(
+    "resize",
+    resizePreview
+);
+
+
+/* =====================================================
+   IMAGE UPLOAD
+===================================================== */
+
+function readImage(
+    input,
+    callback
+){
+
+    const file =
+        input.files &&
+        input.files[0];
+
+    if(!file)
+        return;
+
+
+    if(
+        file.type !== "image/png" &&
+        file.type !== "image/jpeg"
+    ){
+
+        alert(
+            "Please select a JPG or PNG image."
+        );
+
+        input.value = "";
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        e => callback(
+            e.target.result
+        );
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+$("logoInput")
+.addEventListener(
+    "change",
+    function(){
+
+        readImage(
+            this,
+            data => {
+
+                logoData = data;
+
+                $("logoPreview").innerHTML =
+                    `<img src="${data}">`;
+
+                updateReceipt();
+
+            }
+        );
+
+    }
+);
+
+
+$("customerSignatureInput")
+.addEventListener(
+    "change",
+    function(){
+
+        readImage(
+            this,
+            data => {
+
+                customerSignatureData =
+                    data;
+
+                $("customerSignaturePreview").innerHTML =
+                    `<img src="${data}">`;
+
+                updateReceipt();
+
+            }
+        );
+
+    }
+);
+
+
+$("sellerSignatureInput")
+.addEventListener(
+    "change",
+    function(){
+
+        readImage(
+            this,
+            data => {
+
+                sellerSignatureData =
+                    data;
+
+                $("sellerSignaturePreview").innerHTML =
+                    `<img src="${data}">`;
+
+                updateReceipt();
+
+            }
+        );
+
+    }
+);
+
+
+/* =====================================================
+   FIELD EVENTS
+===================================================== */
+
+document
+.querySelectorAll(
+    ".form-panel input:not([type=file]), .form-panel select, .form-panel textarea"
+)
+.forEach(element => {
+
+    element.addEventListener(
+        "input",
+        updateReceipt
+    );
+
+    element.addEventListener(
+        "change",
+        updateReceipt
+    );
+
+});
+
+
+$("addItemBtn")
+.addEventListener(
+    "click",
+    () => {
+
+        addItem();
+
+        setTimeout(
+            () => {
+
+                const names =
+                    document.querySelectorAll(
+                        ".item-name"
+                    );
+
+                if(names.length){
+
+                    names[
+                        names.length - 1
+                    ].focus();
+
+                }
+
+            },
+            50
+        );
+
+    }
+);
+
+
+/* =====================================================
+   AMOUNT IN WORDS
+===================================================== */
+
+function amountInWords(amount){
+
+    if(currency() !== "₹")
+        return "";
+
+    const rounded =
+        Math.round(
+            Number(amount)||0
+        );
+
+
+    if(rounded === 0)
+        return "Amount in words: Zero Rupees Only";
+
+
+    return (
+        "Amount in words: " +
+        indianWords(rounded) +
+        " Rupees Only"
+    );
+
+}
+
+
+function indianWords(num){
+
+    const ones = [
+
+        "",
+        "One",
+        "Two",
+        "Three",
+        "Four",
+        "Five",
+        "Six",
+        "Seven",
+        "Eight",
+        "Nine",
+        "Ten",
+        "Eleven",
+        "Twelve",
+        "Thirteen",
+        "Fourteen",
+        "Fifteen",
+        "Sixteen",
+        "Seventeen",
+        "Eighteen",
+        "Nineteen"
+
+    ];
+
+
+    const tens = [
+
+        "",
+        "",
+        "Twenty",
+        "Thirty",
+        "Forty",
+        "Fifty",
+        "Sixty",
+        "Seventy",
+        "Eighty",
+        "Ninety"
+
+    ];
+
+
+    function two(n){
+
+        if(n < 20)
+            return ones[n];
+
+        return (
+            tens[
+                Math.floor(n/10)
+            ]
+            +
+            (
+                n%10
+                ? " " + ones[n%10]
+                : ""
+            )
+        );
+
+    }
+
+
+    function three(n){
+
+        let result = "";
+
+        if(
+            Math.floor(n/100)
+        ){
+
+            result +=
+                ones[
+                    Math.floor(n/100)
+                ] +
+                " Hundred";
+
+            n %= 100;
+
+            if(n)
+                result += " ";
+
+        }
+
+        if(n)
+            result += two(n);
+
+        return result;
+
+    }
+
+
+    let result = "";
+
+
+    if(
+        Math.floor(num/10000000)
+    ){
+
+        result +=
+            indianWords(
+                Math.floor(
+                    num/10000000
+                )
+            ) +
+            " Crore ";
+
+        num %= 10000000;
+
+    }
+
+
+    if(
+        Math.floor(num/100000)
+    ){
+
+        result +=
+            indianWords(
+                Math.floor(
+                    num/100000
+                )
+            ) +
+            " Lakh ";
+
+        num %= 100000;
+
+    }
+
+
+    if(
+        Math.floor(num/1000)
+    ){
+
+        result +=
+            indianWords(
+                Math.floor(
+                    num/1000
+                )
+            ) +
+            " Thousand ";
+
+        num %= 1000;
+
+    }
+
+
+    if(num)
+        result += three(num);
+
+
+    return result
+        .replace(/\s+/g," ")
+        .trim();
+
+}
+
+
+/* =====================================================
+   LOCAL STORAGE
+===================================================== */
+
+function saveData(){
+
+    try{
+
+        const data = {
+
+            documentType,
+
+            shopName:
+                $("shopName").value,
+
+            shopPhone:
+                $("shopPhone").value,
+
+            shopAddress:
+                $("shopAddress").value,
+
+            shopEmail:
+                $("shopEmail").value,
+
+            gstin:
+                $("gstin").value,
+
+            receiptNumber:
+                $("receiptNumber").value,
+
+            receiptDate:
+                $("receiptDate").value,
+
+            receiptTime:
+                $("receiptTime").value,
+
+            receiptSize:
+                $("receiptSize").value,
+
+            currency:
+                $("currency").value,
+
+            paymentMode:
+                $("paymentMode").value,
+
+            transactionRef:
+                $("transactionRef").value,
+
+            partyName:
+                $("partyName").value,
+
+            partyPhone:
+                $("partyPhone").value,
+
+            partyAddress:
+                $("partyAddress").value,
+
+            notes:
+                $("notes").value,
+
+            items,
+
+            logoData,
+
+            customerSignatureData,
+
+            sellerSignatureData
+
+        };
+
+
+        localStorage.setItem(
+            "receiptGeneratorData",
+            JSON.stringify(data)
+        );
+
+    }catch(error){
+
+        console.warn(
+            "Local save failed",
+            error
+        );
+
+    }
+
+}
+
+
+function loadData(){
+
+    try{
+
+        const saved =
+            localStorage.getItem(
+                "receiptGeneratorData"
+            );
+
+        if(!saved)
+            return;
+
+
+        const data =
+            JSON.parse(saved);
+
+
+        documentType =
+            data.documentType ||
+            "purchase";
+
+
+        const fields = [
+
+            "shopName",
+            "shopPhone",
+            "shopAddress",
+            "shopEmail",
+            "gstin",
+            "receiptNumber",
+            "receiptDate",
+            "receiptTime",
+            "receiptSize",
+            "currency",
+            "paymentMode",
+            "transactionRef",
+            "partyName",
+            "partyPhone",
+            "partyAddress",
+            "notes"
+
+        ];
+
+
+        fields.forEach(id => {
+
+            if(
+                data[id] !== undefined
+            ){
+
+                $(id).value =
+                    data[id];
+
+            }
+
+        });
+
+
+        if(
+            Array.isArray(data.items) &&
+            data.items.length
+        ){
+
+            items =
+                data.items;
+
+        }
+
+
+        logoData =
+            data.logoData || "";
+
+
+        customerSignatureData =
+            data.customerSignatureData || "";
+
+
+        sellerSignatureData =
+            data.sellerSignatureData || "";
+
+
+        if(logoData){
+
+            $("logoPreview").innerHTML =
+                `<img src="${logoData}">`;
+
+        }
+
+
+        if(customerSignatureData){
+
+            $("customerSignaturePreview").innerHTML =
+                `<img src="${customerSignatureData}">`;
+
+        }
+
+
+        if(sellerSignatureData){
+
+            $("sellerSignaturePreview").innerHTML =
+                `<img src="${sellerSignatureData}">`;
+
+        }
+
+
+        renderItems();
+
+    }catch(error){
+
+        console.warn(
+            "Saved data could not be loaded.",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PRINT
+===================================================== */
+
+$("printBtn")
+.addEventListener(
+    "click",
+    () => {
+
+        window.print();
+
+    }
+);
+
+
+/* =====================================================
+   PDF DOWNLOAD
+===================================================== */
+
+$("downloadBtn")
+.addEventListener(
+    "click",
+    downloadPDF
+);
+
+
+async function downloadPDF(){
+
+    updateReceipt();
+
+    showStatus(
+        "Preparing PDF..."
+    );
+
+
+    if(
+        !window.jspdf ||
+        !window.html2canvas
+    ){
+
+        alert(
+            "PDF library load nahi hui. Internet connection check karo. Print button se Save as PDF bhi use kar sakte ho."
+        );
+
+        showStatus(
+            "PDF library unavailable"
+        );
+
+        return;
+
+    }
+
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const receipt =
+        $("receipt");
+
+
+    const size =
+        $("receiptSize").value;
+
+
+    let format;
+
+
+    if(size === "A4")
+        format = "a4";
+
+    else if(size === "A5")
+        format = "a5";
+
+    else if(size === "80mm")
+        format = [80,300];
+
+    else
+        format = [58,300];
+
+
+    /*
+     * Temporarily remove preview scaling.
+     */
+
+    const wrapper =
+        $("receiptWrapper");
+
+    const oldTransform =
+        wrapper.style.transform;
+
+    const oldWidth =
+        wrapper.style.width;
+
+    const oldHeight =
+        wrapper.style.height;
+
+
+    wrapper.style.transform =
+        "none";
+
+    wrapper.style.width =
+        receipt.offsetWidth + "px";
+
+    wrapper.style.height =
+        receipt.offsetHeight + "px";
+
+
+    try{
+
+        const canvas =
+            await html2canvas(
+                receipt,
+                {
+                    scale:2,
+                    backgroundColor:"#ffffff",
+                    useCORS:true,
+                    allowTaint:true,
+                    logging:false
+                }
+            );
+
+
+        const pdf =
+            new jsPDF({
+                orientation:"portrait",
+                unit:"mm",
+                format:format,
+                compress:true
+            });
+
+
+        const pageWidth =
+            pdf.internal.pageSize.getWidth();
+
+        const pageHeight =
+            pdf.internal.pageSize.getHeight();
+
+
+        const padding =
+            size === "A4"
+            ? 10
+            : size === "A5"
+            ? 8
+            : 3;
+
+
+        const usableWidth =
+            pageWidth -
+            padding * 2;
+
+
+        const imageHeight =
+            canvas.height *
+            usableWidth /
+            canvas.width;
+
+
+        /*
+         * If receipt fits on one page.
+         */
+
+        if(
+            imageHeight <=
+            pageHeight - padding*2
+        ){
+
+            pdf.addImage(
+                canvas,
+                "PNG",
+                padding,
+                padding,
+                usableWidth,
+                imageHeight,
+                undefined,
+                "FAST"
+            );
+
+        }else{
+
+            /*
+             * Long thermal receipt.
+             * Split into pages.
+             */
+
+            const usableHeight =
+                pageHeight -
+                padding*2;
+
+
+            let remaining =
+                imageHeight;
+
+            let sourceY = 0;
+
+
+            while(remaining > 0){
+
+                const currentHeight =
+                    Math.min(
+                        usableHeight,
+                        remaining
+                    );
+
+
+                const sourceHeight =
+                    currentHeight *
+                    canvas.width /
+                    usableWidth;
+
+
+                const pageCanvas =
+                    document.createElement(
+                        "canvas"
+                    );
+
+
+                pageCanvas.width =
+                    canvas.width;
+
+
+                pageCanvas.height =
+                    Math.ceil(
+                        sourceHeight
+                    );
+
+
+                const ctx =
+                    pageCanvas.getContext(
+                        "2d"
+                    );
+
+
+                ctx.fillStyle =
+                    "#ffffff";
+
+
+                ctx.fillRect(
+                    0,
+                    0,
+                    pageCanvas.width,
+                    pageCanvas.height
+                );
+
+
+                ctx.drawImage(
+                    canvas,
+                    0,
+                    sourceY,
+                    canvas.width,
+                    sourceHeight,
+                    0,
+                    0,
+                    canvas.width,
+                    sourceHeight
+                );
+
+
+                if(sourceY > 0)
+                    pdf.addPage();
+
+
+                pdf.addImage(
+                    pageCanvas,
+                    "PNG",
+                    padding,
+                    padding,
+                    usableWidth,
+                    currentHeight,
+                    undefined,
+                    "FAST"
+                );
+
+
+                sourceY +=
+                    sourceHeight;
+
+                remaining -=
+                    currentHeight;
+
+            }
+
+        }
+
+
+        const filename =
+            (
+                $("shopName").value ||
+                "Receipt"
+            )
+            .replace(
+                /[\\/:*?"<>|]/g,
+                "_"
+            )
+            .trim()
+            .substring(0,60);
+
+
+        const number =
+            (
+                $("receiptNumber").value ||
+                "Document"
+            )
+            .replace(
+                /[\\/:*?"<>|]/g,
+                "_"
+            );
+
+
+        pdf.save(
+            `${filename}_${number}.pdf`
+        );
+
+
+        showStatus(
+            "PDF downloaded"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "PDF error:",
+            error
+        );
+
+
+        alert(
+            "PDF create nahi ho payi. Print button → Save as PDF try karo."
+        );
+
+
+        showStatus(
+            "PDF creation failed"
+        );
+
+    }
+
+
+    /*
+     * Restore preview scaling.
+     */
+
+    wrapper.style.transform =
+        oldTransform;
+
+    wrapper.style.width =
+        oldWidth;
+
+    wrapper.style.height =
+        oldHeight;
+
+
+    resizePreview();
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+$("resetBtn")
+.addEventListener(
+    "click",
+    () => {
+
+        if(
+            !confirm(
+                "Kya tum current document ka saara data reset karna chahte ho?"
+            )
+        )
+            return;
+
+
+        localStorage.removeItem(
+            "receiptGeneratorData"
+        );
+
+
+        location.reload();
+
+    }
+);
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+let statusTimer;
+
+function showStatus(message){
+
+    const status =
+        $("status");
+
+    status.textContent =
+        message;
+
+    status.style.display =
+        "block";
+
+
+    clearTimeout(
+        statusTimer
+    );
+
+
+    statusTimer =
+        setTimeout(
+            () => {
+
+                status.style.display =
+                    "none";
+
+            },
+            2000
+        );
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+init();
+
+</script>
+
+</body>
+</html>
