@@ -31,6 +31,6 @@
   "name": "Resume Builder",
   "description": "Create a professional one-page resume and download it as a PDF.",
   "category": "Productivity",
-  "folder": "resume-builder",
+  "folder": "tools/resume-builder",
   "version": "1.0.0"
 }]
