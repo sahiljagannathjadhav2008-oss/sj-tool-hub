@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Resume Builder</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    nav {
+      margin-bottom: 20px;
+    }
+
+    nav button {
+      margin-right: 10px;
+      padding: 8px 15px;
+      background: teal;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+
+    /* =========================
+       RESUME A4
+       ========================= */
+
+    .resume {
+      width: 210mm;
+      height: 297mm;
+
+      min-width: 210mm;
+      min-height: 297mm;
+
+      max-width: 210mm;
+      max-height: 297mm;
+
+      padding: 10mm;
+
+      border: 2px solid teal;
+
+      background: #fff;
+
+      position: relative;
+
+      box-sizing: border-box;
+
+      overflow: hidden;
+    }
+
+
+    .resume h1 {
+      text-transform: uppercase;
+
+      font-size: 22px;
+
+      font-weight: bold;
+
+      text-align: center;
+
+      margin-top: 0;
+
+      margin-bottom: 15px;
+    }
+
+
+    .resume .header-info p {
+      margin: 2px 0;
+
+      text-align: left;
+
+      font-size: 13px;
+
+      line-height: 1.3;
+    }
+
+
+    .section-title {
+      background-color: teal;
+
+      color: white;
+
+      font-weight: bold;
+
+      text-transform: uppercase;
+
+      padding: 6px 10px;
+
+      margin-top: 14px;
+
+      text-align: center;
+
+      font-size: 13px;
+    }
+
+
+    .section-content {
+      text-align: left;
+
+      margin: 7px 0;
+
+      font-size: 12px;
+
+      line-height: 1.3;
+
+      overflow-wrap: break-word;
+
+      word-wrap: break-word;
+    }
+
+
+    .section-content ul {
+      margin-top: 4px;
+
+      margin-bottom: 4px;
+
+      padding-left: 24px;
+    }
+
+
+    .section-content li {
+      margin-bottom: 2px;
+    }
+
+
+    .personal-details p {
+      margin: 4px 0;
+
+      text-align: left;
+
+      font-size: 12px;
+
+      line-height: 1.25;
+    }
+
+
+    /* =========================
+       FOOTER
+       ========================= */
+
+    .footer {
+      position: absolute;
+
+      bottom: 10mm;
+
+      left: 10mm;
+
+      right: 10mm;
+
+      display: flex;
+
+      justify-content: flex-end;
+
+      align-items: flex-end;
+
+      font-size: 12px;
+    }
+
+
+    .footer p {
+      margin: 0;
+    }
+
+
+    /* =========================
+       DOWNLOAD BUTTON
+       ========================= */
+
+    .download-btn {
+      margin-top: 20px;
+
+      padding: 10px 20px;
+
+      background: teal;
+
+      color: white;
+
+      border: none;
+
+      cursor: pointer;
+
+      font-weight: bold;
+    }
+
+
+    /* =========================
+       MOBILE
+       ========================= */
+
+    @media (max-width: 800px) {
+
+      body {
+        padding: 10px;
+      }
+
+      section {
+        overflow-x: auto;
+      }
+
+      .resume {
+        transform-origin: top left;
+      }
+
+    }
+
+
+    /* =========================
+       PRINT
+       ========================= */
+
+    @media print {
+
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+
+      html,
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+      }
+
+      .resume {
+        width: 210mm !important;
+        height: 297mm !important;
+
+        min-width: 210mm !important;
+        min-height: 297mm !important;
+
+        margin: 0 !important;
+
+        overflow: hidden !important;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- =========================
+       NAVIGATION
+       ========================= -->
+
+  <nav>
+
+    <button onclick="showHome()">
+      Home
+    </button>
+
+    <button onclick="showPreview()">
+      Preview
+    </button>
+
+  </nav>
+
+
+
+  <!-- =========================
+       HOME
+       ========================= -->
+
+  <section id="home">
+
+    <h2>Fill Resume Details</h2>
+
+
+    <form id="resumeForm">
+
+
+      <label>Name:</label>
+      <input type="text" id="name">
+
+
+      <label>Email:</label>
+      <input type="text" id="email">
+
+
+      <label>Phone:</label>
+      <input type="text" id="phone">
+
+
+      <label>Address:</label>
+      <input type="text" id="address">
+
+
+      <label>Career Objective:</label>
+      <textarea id="objective"></textarea>
+
+
+      <label>Academic Qualification (line by line):</label>
+      <textarea id="education"></textarea>
+
+
+      <label>Professional Skills (line by line):</label>
+      <textarea id="skills"></textarea>
+
+
+      <label>Strengths (line by line):</label>
+      <textarea id="strengths"></textarea>
+
+
+      <label>Work Experience:</label>
+      <textarea id="experience"></textarea>
+
+
+      <label>Father’s Name:</label>
+      <input type="text" id="father">
+
+
+      <label>Date of Birth:</label>
+      <input type="text" id="dob">
+
+
+      <label>Gender:</label>
+      <input type="text" id="gender">
+
+
+      <label>Nationality:</label>
+      <input type="text" id="nationality">
+
+
+      <label>Marital Status:</label>
+      <input type="text" id="marital">
+
+
+      <label>Languages Known:</label>
+      <input type="text" id="languages">
+
+
+      <label>Hobbies:</label>
+      <input type="text" id="hobbies">
+
+
+      <button
+        type="button"
+        onclick="generatePreview()">
+
+        Generate Preview
+
+      </button>
+
+
+    </form>
+
+  </section>
+
+
+
+  <!-- =========================
+       PREVIEW
+       ========================= -->
+
+  <section
+    id="preview"
+    style="display:none;">
+
+    <div
+      id="resumePreview"
+      class="resume">
+    </div>
+
+
+    <!-- DOWNLOAD BUTTON -->
+
+    <button
+      class="download-btn"
+      onclick="downloadPDF()">
+
+      Download PDF
+
+    </button>
+
+  </section>
+
+
+
+  <!-- =========================
+       HTML2CANVAS
+       ========================= -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+  </script>
+
+
+  <!-- =========================
+       JSPDF
+       ========================= -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+  </script>
+
+
+
+  <script>
+
+
+    /* =========================
+       NAVIGATION
+       ========================= */
+
+    function showHome() {
+
+      document.getElementById("home").style.display = "block";
+
+      document.getElementById("preview").style.display = "none";
+
+    }
+
+
+    function showPreview() {
+
+      document.getElementById("home").style.display = "none";
+
+      document.getElementById("preview").style.display = "block";
+
+    }
+
+
+
+    /* =========================
+       GENERATE PREVIEW
+       ========================= */
+
+    function generatePreview() {
+
+
+      const name =
+        document.getElementById("name").value ||
+        "YOUR NAME";
+
+
+      const email =
+        document.getElementById("email").value;
+
+
+      const phone =
+        document.getElementById("phone").value;
+
+
+      const address =
+        document.getElementById("address").value;
+
+
+      const objective =
+        document.getElementById("objective").value;
+
+
+      const education =
+        document
+          .getElementById("education")
+          .value
+          .split("\n")
+          .filter(
+            l => l.trim() !== ""
+          );
+
+
+      const skills =
+        document
+          .getElementById("skills")
+          .value
+          .split("\n")
+          .filter(
+            l => l.trim() !== ""
+          );
+
+
+      const strengths =
+        document
+          .getElementById("strengths")
+          .value
+          .split("\n")
+          .filter(
+            l => l.trim() !== ""
+          );
+
+
+      const experience =
+        document.getElementById("experience").value;
+
+
+      const father =
+        document.getElementById("father").value;
+
+
+      const dob =
+        document.getElementById("dob").value;
+
+
+      const gender =
+        document.getElementById("gender").value;
+
+
+      const nationality =
+        document.getElementById("nationality").value;
+
+
+      const marital =
+        document.getElementById("marital").value;
+
+
+      const languages =
+        document.getElementById("languages").value;
+
+
+      const hobbies =
+        document.getElementById("hobbies").value;
+
+
+
+      document.getElementById(
+        "resumePreview"
+      ).innerHTML = `
+
+
+        <h1 id="topName">
+          ${name}
+        </h1>
+
+
+        <div class="header-info">
+
+          <p>
+            <b>Email id:</b>
+            ${email}
+          </p>
+
+          <p>
+            <b>Mobile No:</b>
+            ${phone}
+          </p>
+
+          <p>
+            <b>Address:</b>
+            ${address}
+          </p>
+
+        </div>
+
+
+
+        <div class="section-title">
+          CAREER OBJECTIVE
+        </div>
+
+
+        <div class="section-content">
+          ${objective}
+        </div>
+
+
+
+        <div class="section-title">
+          ACADEMIC QUALIFICATION
+        </div>
+
+
+        <div class="section-content">
+
+          <ul>
+
+            ${
+              education
+                .map(
+                  e => `<li>${e}</li>`
+                )
+                .join("")
+            }
+
+          </ul>
+
+        </div>
+
+
+
+        <div class="section-title">
+          PROFESSIONAL SKILLS
+        </div>
+
+
+        <div class="section-content">
+
+          <ul>
+
+            ${
+              skills
+                .map(
+                  s => `<li>${s}</li>`
+                )
+                .join("")
+            }
+
+          </ul>
+
+        </div>
+
+
+
+        <div class="section-title">
+          STRENGTHS
+        </div>
+
+
+        <div class="section-content">
+
+          <ul>
+
+            ${
+              strengths
+                .map(
+                  st => `<li>${st}</li>`
+                )
+                .join("")
+            }
+
+          </ul>
+
+        </div>
+
+
+
+        <div class="section-title">
+          WORK EXPERIENCE
+        </div>
+
+
+        <div class="section-content">
+          ${experience}
+        </div>
+
+
+
+        <div class="section-title">
+          PERSONAL DETAILS
+        </div>
+
+
+        <div class="personal-details">
+
+
+          <p>
+            <b>Father’s Name:</b>
+            ${father}
+          </p>
+
+
+          <p>
+            <b>Date of Birth:</b>
+            ${dob}
+          </p>
+
+
+          <p>
+            <b>Gender:</b>
+            ${gender}
+          </p>
+
+
+          <p>
+            <b>Nationality:</b>
+            ${nationality}
+          </p>
+
+
+          <p>
+            <b>Marital Status:</b>
+            ${marital}
+          </p>
+
+
+          <p>
+            <b>Languages Known:</b>
+            ${languages}
+          </p>
+
+
+          <p>
+            <b>Hobbies:</b>
+            ${hobbies}
+          </p>
+
+
+        </div>
+
+
+
+        <!--
+          Place and Date have been removed.
+          Only the name remains at bottom-right.
+        -->
+
+        <div class="footer">
+
+          <p id="bottomName">
+            ${name}
+          </p>
+
+        </div>
+
+
+      `;
+
+
+      showPreview();
+
+    }
+
+
+
+    /* =========================
+       DOWNLOAD ONE-PAGE PDF
+       ========================= */
+
+    async function downloadPDF() {
+
+
+      const element =
+        document.getElementById(
+          "resumePreview"
+        );
+
+
+      if (
+        !element ||
+        element.innerHTML.trim() === ""
+      ) {
+
+        alert(
+          "Please generate the resume preview first."
+        );
+
+        return;
+
+      }
+
+
+
+      /*
+       * Create a temporary clone.
+       * This prevents the visible preview
+       * from being modified.
+       */
+
+      const clone =
+        element.cloneNode(true);
+
+
+      clone.id =
+        "resumePDFClone";
+
+
+      clone.style.position =
+        "absolute";
+
+
+      clone.style.left =
+        "-100000px";
+
+
+      clone.style.top =
+        "0";
+
+
+      clone.style.margin =
+        "0";
+
+
+      clone.style.transform =
+        "none";
+
+
+      clone.style.width =
+        "210mm";
+
+
+      clone.style.height =
+        "297mm";
+
+
+      clone.style.minWidth =
+        "210mm";
+
+
+      clone.style.minHeight =
+        "297mm";
+
+
+      clone.style.maxWidth =
+        "210mm";
+
+
+      clone.style.maxHeight =
+        "297mm";
+
+
+      clone.style.overflow =
+        "hidden";
+
+
+      clone.style.background =
+        "#ffffff";
+
+
+      document.body.appendChild(
+        clone
+      );
+
+
+
+      try {
+
+
+        /*
+         * Convert the entire resume
+         * into ONE canvas.
+         */
+
+        const canvas =
+          await html2canvas(
+            clone,
+            {
+              scale: 2,
+
+              useCORS: true,
+
+              allowTaint: false,
+
+              backgroundColor:
+                "#ffffff",
+
+              logging: false,
+
+              scrollX: 0,
+
+              scrollY: 0,
+
+              width:
+                clone.scrollWidth,
+
+              height:
+                clone.scrollHeight
+            }
+          );
+
+
+
+        /*
+         * Create exactly ONE
+         * A4 PDF page.
+         */
+
+        const {
+          jsPDF
+        } = window.jspdf;
+
+
+        const pdf =
+          new jsPDF({
+            orientation: "portrait",
+
+            unit: "mm",
+
+            format: "a4",
+
+            compress: true
+          });
+
+
+
+        /*
+         * Exact A4 size.
+         */
+
+        const pageWidth =
+          210;
+
+        const pageHeight =
+          297;
+
+
+
+        /*
+         * Convert canvas to image.
+         */
+
+        const imageData =
+          canvas.toDataURL(
+            "image/jpeg",
+            1.0
+          );
+
+
+
+        /*
+         * Put the complete resume
+         * onto the single A4 page.
+         */
+
+        pdf.addImage(
+          imageData,
+
+          "JPEG",
+
+          0,
+
+          0,
+
+          pageWidth,
+
+          pageHeight,
+
+          undefined,
+
+          "FAST"
+        );
+
+
+
+        /*
+         * Save the PDF.
+         *
+         * No html2pdf page-break
+         * system is used here.
+         */
+
+        pdf.save(
+          "resume.pdf"
+        );
+
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        alert(
+          "PDF generation failed. Please try again."
+        );
+
+      }
+
+      finally {
+
+
+        /*
+         * Remove temporary clone.
+         */
+
+        if (
+          clone &&
+          clone.parentNode
+        ) {
+
+          clone.parentNode.removeChild(
+            clone
+          );
+
+        }
+
+      }
+
+    }
+
+  </script>
+
+
+</body>
+</html>
